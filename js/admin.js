@@ -25,11 +25,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const savedTheme = localStorage.getItem('pf-theme') || 'light';
   document.documentElement.setAttribute('data-theme', savedTheme);
 
-  const { url, key } = getSupabaseConfig();
-  if (!url || !key) { showConfigScreen(); return; }
-
   const sbReady = initSupabase();
-  if (!sbReady) { showConfigScreen(); return; }
+  if (!sbReady) {
+    document.getElementById('loginError').textContent = 'Supabase JS failed to load or keys missing.';
+    document.getElementById('loginError').classList.add('show');
+    showLogin();
+    return;
+  }
 
   const session = await getSession();
   if (session) {
@@ -41,44 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-/* ═══════════════════════════════
-   CONFIG SCREEN
-═══════════════════════════════ */
-function showConfigScreen() {
-  document.getElementById('configScreen').style.display = 'flex';
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('dashboard').style.display = 'none';
-  const { url, key } = getSupabaseConfig();
-  if (url) document.getElementById('configUrl').value = url;
-  if (key) document.getElementById('configKey').value = key;
-}
-
-function handleSaveConfig(e) {
-  e.preventDefault();
-  const url = document.getElementById('configUrl').value.trim();
-  const key = document.getElementById('configKey').value.trim();
-  const errorEl = document.getElementById('configError');
-
-  if (!url.startsWith('https://')) {
-    errorEl.textContent = 'URL must start with https://';
-    errorEl.classList.add('show'); return;
-  }
-  if (key.length < 10) {
-    errorEl.textContent = 'Key is too short.';
-    errorEl.classList.add('show'); return;
-  }
-
-  saveSupabaseConfig(url, key);
-  errorEl.classList.remove('show');
-  const sbReady = initSupabase();
-  if (sbReady) {
-    showLogin();
-    showToast('Supabase configured!', 'success');
-  } else {
-    errorEl.textContent = 'Failed to initialize Supabase';
-    errorEl.classList.add('show');
-  }
-}
+// Config screen logic removed - keys are now strictly defined in supabase-client.js
 
 /* ═══════════════════════════════
    AUTH
@@ -107,13 +72,15 @@ async function handleLogout() {
 }
 
 function showLogin() {
-  document.getElementById('configScreen').style.display = 'none';
+  const cfgEl = document.getElementById('configScreen');
+  if (cfgEl) cfgEl.style.display = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('dashboard').style.display = 'none';
 }
 
 function showDashboard() {
-  document.getElementById('configScreen').style.display = 'none';
+  const cfgEl = document.getElementById('configScreen');
+  if (cfgEl) cfgEl.style.display = 'none';
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
   const userEl = document.getElementById('adminEmail');

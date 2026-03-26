@@ -5,35 +5,26 @@
 
 let sbClient = null;
 
-/**
- * Get Supabase config from localStorage (set via admin UI)
- */
-function getSupabaseConfig() {
-  const url = localStorage.getItem('sb-url');
-  const key = localStorage.getItem('sb-anon-key');
-  return { url, key };
-}
-
-function saveSupabaseConfig(url, key) {
-  localStorage.setItem('sb-url', url);
-  localStorage.setItem('sb-anon-key', key);
-}
+// The Anon Key is inherently safe to expose in client-side code for a public web application.
+// Database security must be handled via Supabase Row Level Security (RLS) policies.
+const SUPABASE_URL = 'https://blpwhdygjpgnchgrfbgr.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_G1RGU8mHns-bdaEPQmnhtQ_PXXNLWIB';
 
 function initSupabase() {
-  const { url, key } = getSupabaseConfig();
-
-  // Check config exists and is valid
-  if (!url || !key || !url.startsWith('https://')) {
-    console.warn('[Portfolio] Supabase not configured — using fallback data');
-    return false;
-  }
   // Check Supabase CDN loaded
   if (!window.supabase || !window.supabase.createClient) {
     console.warn('[Portfolio] Supabase JS library not loaded — using fallback data');
     return false;
   }
+
+  // If URL indicates placeholder, skip initialization
+  if (SUPABASE_URL.includes('YOUR_SUPABASE_URL')) {
+    console.warn('[Portfolio] Supabase not configured — using fallback data');
+    return false;
+  }
+
   try {
-    sbClient = window.supabase.createClient(url, key);
+    sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     return true;
   } catch (e) {
     console.error('[Portfolio] Supabase init failed:', e);
