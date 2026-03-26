@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>B.Admin — Portfolio Management</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/syne@5/index.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono@5/index.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<!-- ═══ ANIMATED BACKGROUND ═══ -->
+<div class="bg-canvas">
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+  <div class="bg-orb bg-orb-3"></div>
+  <div class="bg-orb bg-orb-4"></div>
+</div>
+<div class="bg-noise"></div>
+
+<!-- ═══ CONFIG SCREEN ═══ -->
+<div id="configScreen" class="auth-screen" style="display:none">
+  <form class="auth-card" onsubmit="handleSaveConfig(event)">
+    <h1 class="auth-logo">B<span>.</span>SETUP</h1>
+    <p style="text-align:center;font-family:var(--fm);font-size:12px;color:var(--ts);margin-bottom:1rem">Supabase Configuration</p>
+    <div class="form-group">
+      <label class="form-label">SUPABASE PROJECT URL</label>
+      <input class="form-input" type="url" id="configUrl" placeholder="https://your-project.supabase.co" required>
+      <div class="form-hint">Found in Supabase Dashboard → Settings → API</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">SUPABASE ANON KEY</label>
+      <input class="form-input" type="text" id="configKey" placeholder="eyJhbGciOiJIUzI1NiIs..." required>
+      <div class="form-hint">The "anon" / "public" key (safe for client-side)</div>
+    </div>
+    <div class="auth-error" id="configError"></div>
+    <button type="submit" class="btn btn-primary" style="width:100%">Save & Continue</button>
+    <a href="index.html" class="back-link">← Back to Portfolio</a>
+  </form>
+</div>
+
+<!-- ═══ LOGIN SCREEN ═══ -->
+<div id="loginScreen" class="auth-screen" style="display:none">
+  <form class="auth-card" onsubmit="handleLogin(event)">
+    <h1 class="auth-logo">B<span>.</span>ADMIN</h1>
+    <div class="form-group">
+      <label class="form-label">EMAIL</label>
+      <input class="form-input" type="email" id="loginEmail" required>
+    </div>
+    <div class="form-group">
+      <label class="form-label">PASSWORD</label>
+      <input class="form-input" type="password" id="loginPassword" required>
+    </div>
+    <div class="auth-error" id="loginError"></div>
+    <button type="submit" class="btn btn-primary" style="width:100%">Sign In</button>
+    <a href="index.html" class="back-link">← Back to Portfolio</a>
+    <button type="button" class="back-link" style="border:none;background:none;cursor:pointer;margin-top:.25rem" onclick="showConfigScreen()">⚙ Re-configure Supabase</button>
+  </form>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div id="dashboard" class="admin-dash" style="display:none">
+  <header class="admin-header">
+    <a class="logo" href="index.html">B<span>.</span>ADMIN</a>
+    <div class="admin-actions">
+      <span id="adminEmail" class="admin-user"></span>
+      <a href="index.html" class="btn btn-sm btn-home">🏠 Home</a>
+      <button class="btn btn-sm btn-secondary" onclick="toggleAdminTheme()">🌗 Theme</button>
+      <button class="btn btn-sm btn-secondary" onclick="exportData()">📤 Export</button>
+      <button class="btn btn-sm btn-secondary" onclick="importData()">📥 Import</button>
+      <button class="btn btn-sm btn-secondary" onclick="seedDefaults()">🌱 Seed</button>
+      <button class="btn btn-sm btn-danger" onclick="handleLogout()">🚪 Logout</button>
+    </div>
+  </header>
+
+  <div class="admin-tabs">
+    <button class="tab-btn active" data-tab="projects" onclick="switchTab('projects')">PROJECTS</button>
+    <button class="tab-btn" data-tab="skills" onclick="switchTab('skills')">SKILLS</button>
+    <button class="tab-btn" data-tab="experience" onclick="switchTab('experience')">EXPERIENCE</button>
+    <button class="tab-btn" data-tab="education" onclick="switchTab('education')">EDUCATION</button>
+    <button class="tab-btn" data-tab="profile" onclick="switchTab('profile')">PROFILE</button>
+  </div>
+
+  <!-- PROJECTS PANEL -->
+  <div class="tab-panel active" id="panel-projects">
+    <div class="panel-header">
+      <h2>Projects</h2>
+      <button class="btn btn-primary btn-sm" onclick="openProjectEditor()">+ Add Project</button>
+    </div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>#</th><th>NAME</th><th>CAT</th><th>TAGS</th><th>ACTIONS</th></tr></thead>
+        <tbody id="projectsTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SKILLS PANEL -->
+  <div class="tab-panel" id="panel-skills">
+    <div class="panel-header"><h2>Skills & Tools</h2></div>
+    <div id="skillsPanel"></div>
+  </div>
+
+  <!-- EXPERIENCE PANEL -->
+  <div class="tab-panel" id="panel-experience">
+    <div class="panel-header">
+      <h2>Experience</h2>
+      <button class="btn btn-primary btn-sm" onclick="openExpEditor()">+ Add Experience</button>
+    </div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>#</th><th>TITLE</th><th>ORG</th><th>TYPE</th><th>PERIOD</th><th>ACTIONS</th></tr></thead>
+        <tbody id="expTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- EDUCATION PANEL -->
+  <div class="tab-panel" id="panel-education">
+    <div class="panel-header">
+      <h2>Education</h2>
+      <button class="btn btn-primary btn-sm" onclick="openEduEditor()">+ Add Education</button>
+    </div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>#</th><th>DEGREE</th><th>INSTITUTION</th><th>PERIOD</th><th>GPA</th><th>ACTIONS</th></tr></thead>
+        <tbody id="eduTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PROFILE PANEL -->
+  <div class="tab-panel" id="panel-profile">
+    <div class="panel-header"><h2>Profile & Settings</h2></div>
+    <div id="profilePanel"></div>
+  </div>
+</div>
+
+<!-- ═══ PROJECT EDITOR OVERLAY ═══ -->
+<div class="editor-overlay" id="editorOverlay">
+  <div class="editor-card">
+    <div class="editor-header">
+      <h3 id="editorTitle">Add Project</h3>
+      <button class="editor-close" onclick="closeEditor()">×</button>
+    </div>
+    <div class="editor-body">
+      <div class="form-group">
+        <label class="form-label">SORT ORDER</label>
+        <input class="form-input" type="number" id="projOrder" min="1" value="1">
+      </div>
+      <div class="form-group">
+        <label class="form-label">NAME</label>
+        <input class="form-input" id="projName" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">CATEGORY</label>
+        <select class="form-select" id="projCategory">
+          <option value="ai">AI / ML</option>
+          <option value="fullstack">Full-Stack</option>
+          <option value="tools">Tools</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">SHORT DESCRIPTION (ENGLISH)</label>
+        <textarea class="form-textarea" id="projDescEn" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">SHORT DESCRIPTION (BAHASA)</label>
+        <textarea class="form-textarea" id="projDescId" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">FULL DETAIL (ENGLISH)</label>
+        <textarea class="form-textarea" id="projDetailEn" rows="5"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">FULL DETAIL (BAHASA)</label>
+        <textarea class="form-textarea" id="projDetailId" rows="5"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">TECH TAGS</label>
+        <div class="tags-input" id="projTagsWrap">
+          <input class="tags-field" id="projTagsInput" placeholder="Press Enter or comma to add a tag">
+        </div>
+        <div class="form-hint">Press Enter or comma to add a tag</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">GITHUB URL</label>
+          <input class="form-input" id="projGithub" placeholder="https://github.com/...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">LIVE DEMO URL</label>
+          <input class="form-input" id="projLive" placeholder="https://...">
+        </div>
+      </div>
+    </div>
+    <div class="editor-footer">
+      <button class="btn btn-secondary" onclick="closeEditor()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProject()">Save Project</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ EXPERIENCE EDITOR OVERLAY ═══ -->
+<div class="editor-overlay" id="expEditorOverlay">
+  <div class="editor-card">
+    <div class="editor-header">
+      <h3 id="expEditorTitle">Add Experience</h3>
+      <button class="editor-close" onclick="closeExpEditor()">×</button>
+    </div>
+    <div class="editor-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">SORT ORDER</label>
+          <input class="form-input" type="number" id="expOrder" min="1" value="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">TYPE</label>
+          <select class="form-select" id="expType">
+            <option value="professional">Professional</option>
+            <option value="organization">Organization</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">PERIOD</label>
+        <input class="form-input" id="expPeriod" placeholder="e.g. OCT 2025 → NOW">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">TITLE (ENGLISH)</label>
+          <input class="form-input" id="expTitleEn">
+        </div>
+        <div class="form-group">
+          <label class="form-label">TITLE (BAHASA)</label>
+          <input class="form-input" id="expTitleId">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">ORGANIZATION</label>
+        <input class="form-input" id="expOrg">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">DESCRIPTION (ENGLISH)</label>
+          <textarea class="form-textarea" id="expDescEn" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">DESCRIPTION (BAHASA)</label>
+          <textarea class="form-textarea" id="expDescId" rows="3"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="editor-footer">
+      <button class="btn btn-secondary" onclick="closeExpEditor()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveExperience()">Save Experience</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ EDUCATION EDITOR OVERLAY ═══ -->
+<div class="editor-overlay" id="eduEditorOverlay">
+  <div class="editor-card">
+    <div class="editor-header">
+      <h3 id="eduEditorTitle">Add Education</h3>
+      <button class="editor-close" onclick="closeEduEditor()">×</button>
+    </div>
+    <div class="editor-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">SORT ORDER</label>
+          <input class="form-input" type="number" id="eduOrder" min="1" value="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">PERIOD</label>
+          <input class="form-input" id="eduPeriod" placeholder="e.g. 2018 - 2022">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">INSTITUTION</label>
+        <input class="form-input" id="eduInstitution">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">DEGREE (ENGLISH)</label>
+          <input class="form-input" id="eduDegreeEn">
+        </div>
+        <div class="form-group">
+          <label class="form-label">DEGREE (BAHASA)</label>
+          <input class="form-input" id="eduDegreeId">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">GPA (OPTIONAL)</label>
+        <input class="form-input" id="eduGpa" placeholder="e.g. 3.93/4.00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">HIGHLIGHT TAGS (ENGLISH)</label>
+        <div class="tags-input" id="eduTagsEnWrap">
+          <input class="tags-field" id="eduTagsEnInput" placeholder="Press Enter or comma to add a tag">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">HIGHLIGHT TAGS (BAHASA)</label>
+        <div class="tags-input" id="eduTagsIdWrap">
+          <input class="tags-field" id="eduTagsIdInput" placeholder="Press Enter or comma to add a tag">
+        </div>
+      </div>
+    </div>
+    <div class="editor-footer">
+      <button class="btn btn-secondary" onclick="closeEduEditor()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEducation()">Save Education</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TOAST ═══ -->
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/data.js"></script>
+<script src="js/admin.js"></script>
+<script>
+  // Initialize tags input
+  document.addEventListener('DOMContentLoaded', () => {
+    setupTagsInput('projTagsWrap', 'projTagsInput');
+    setupTagsInput('eduTagsEnWrap', 'eduTagsEnInput');
+    setupTagsInput('eduTagsIdWrap', 'eduTagsIdInput');
+  });
+</script>
+</body>
+</html>

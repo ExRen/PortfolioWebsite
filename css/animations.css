@@ -1,0 +1,187 @@
+/* ═══════════════════════════════════════════════════
+   ANIMATIONS — Scroll reveals, hover effects, transitions
+═══════════════════════════════════════════════════ */
+
+/* ── Scroll Reveal Animations ── */
+.reveal{
+  opacity:0;
+  transform:translateY(24px);
+  transition:opacity .6s ease-out,transform .6s ease-out;
+}
+.reveal.visible{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* ── Staggered children ── */
+.stagger-children .reveal{transition-delay:0s}
+.stagger-children .reveal:nth-child(1){transition-delay:.05s}
+.stagger-children .reveal:nth-child(2){transition-delay:.1s}
+.stagger-children .reveal:nth-child(3){transition-delay:.15s}
+.stagger-children .reveal:nth-child(4){transition-delay:.2s}
+.stagger-children .reveal:nth-child(5){transition-delay:.25s}
+.stagger-children .reveal:nth-child(6){transition-delay:.3s}
+.stagger-children .reveal:nth-child(7){transition-delay:.35s}
+.stagger-children .reveal:nth-child(8){transition-delay:.4s}
+
+/* ── Hero Text Entrance ── */
+.hero-anim{
+  clip-path:inset(0 100% 0 0);
+  animation:heroReveal .8s ease-out .2s forwards;
+}
+@keyframes heroReveal{
+  to{clip-path:inset(0 0 0 0)}
+}
+
+/* ── Hero Info Entrance ── */
+.hero-info-anim{
+  opacity:0;
+  transform:translateY(16px);
+  animation:fadeInUp .6s ease-out .6s forwards;
+}
+@keyframes fadeInUp{
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ── Stats Counter Animation ── */
+.stat-v[data-count]{
+  transition:opacity .3s;
+}
+
+/* ── Card Hover Effects ── */
+.pc{
+  transition:all .3s cubic-bezier(0.4,0,0.2,1);
+}
+.pc:hover{
+  background:var(--bgs);
+  transform:translateY(-2px);
+}
+.pc:active{
+  transform:translateY(0);
+}
+
+/* ── Experience Card Hover ── */
+.ec{
+  transition:all .3s cubic-bezier(0.4,0,0.2,1);
+}
+.ec:hover{
+  transform:translateY(-2px);
+}
+
+/* ── Skill Tag Hover ── */
+.sk{
+  transition:all .25s cubic-bezier(0.4,0,0.2,1);
+}
+.sk:hover{
+  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* ── Pill Hover Glow ── */
+.apill{
+  transition:all .25s ease;
+}
+.apill:hover{
+  transform:scale(1.05);
+}
+
+/* ── Filter Button Press ── */
+.fb{
+  transition:all .2s cubic-bezier(0.4,0,0.2,1);
+}
+.fb:active{
+  transform:scale(0.96);
+}
+
+/* ── Page Load Fade ── */
+.page-enter{
+  animation:pageEnter .5s ease-out;
+}
+@keyframes pageEnter{
+  from{opacity:0}
+  to{opacity:1}
+}
+
+/* ── Badge Pulse ── */
+@keyframes pulse-glow{
+  0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.3)}
+  50%{box-shadow:0 0 0 4px rgba(34,197,94,0)}
+}
+.sdot{animation:pulse-glow 2s ease-in-out infinite}
+
+/* ── Contact Section Float ── */
+.cname{
+  transition:letter-spacing .3s ease;
+}
+.contact:hover .cname{
+  letter-spacing:-.02em;
+}
+
+/* ── Smooth Filter Transition ── */
+.pc{
+  transition:all .35s cubic-bezier(0.4,0,0.2,1);
+}
+.pc.filter-hide{
+  opacity:0;
+  transform:scale(0.95);
+  pointer-events:none;
+  position:absolute;
+  visibility:hidden;
+}
+.pc.filter-show{
+  animation:filterIn .35s ease-out forwards;
+}
+@keyframes filterIn{
+  from{opacity:0;transform:scale(0.95)}
+  to{opacity:1;transform:scale(1)}
+}
+
+/* ── Modal Animations ── */
+.modal-overlay{
+  transition:opacity .3s ease,visibility .3s ease;
+}
+.modal{
+  transition:transform .3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.modal-overlay.active .modal{
+  transform:scale(1) translateY(0);
+}
+
+/* ── Loading Skeleton ── */
+.skeleton{
+  background:linear-gradient(90deg,var(--bgs) 25%,var(--bgt) 50%,var(--bgs) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.5s infinite;
+  border-radius:4px;
+}
+@keyframes shimmer{
+  from{background-position:200% 0}
+  to{background-position:-200% 0}
+}
+
+/* ── Section Divider Glow ── */
+.border-top{
+  position:relative;
+}
+.border-top::before{
+  content:'';
+  position:absolute;
+  top:-1px;left:50%;
+  transform:translateX(-50%);
+  width:60px;height:2px;
+  background:var(--ac);
+  border-radius:1px;
+  opacity:0.4;
+}
+
+/* ── Reduce motion for accessibility ── */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:0.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.01ms !important;
+  }
+  .reveal{opacity:1;transform:none}
+  .hero-anim{clip-path:none}
+  .hero-info-anim{opacity:1;transform:none}
+}

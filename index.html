@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bima Aryadinata — Portfolio</title>
+  <meta name="description" content="Bima Aryadinata — Full-stack developer & IT communicator. Building AI-powered media intelligence, document management, and internal web systems.">
+  <meta name="author" content="Bima Aryadinata">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/syne@5/index.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono@5/index.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+
+<!-- ═══ ANIMATED BACKGROUND ═══ -->
+<div class="bg-canvas">
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+  <div class="bg-orb bg-orb-3"></div>
+  <div class="bg-orb bg-orb-4"></div>
+</div>
+<div class="bg-noise"></div>
+<div class="bg-grid"></div>
+
+<div class="wrap">
+
+  <!-- ═══ NAV ═══ -->
+  <nav>
+    <a class="logo" href="#">PORTOFOLIO</a>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="#about" data-i18n="nav_about">about</a></li>
+        <li><a href="#education" data-i18n="nav_education">education</a></li>
+        <li><a href="#projects" data-i18n="nav_projects">projects</a></li>
+        <li><a href="#experience" data-i18n="nav_experience">experience</a></li>
+        <li><a href="#skills" data-i18n="nav_skills">skills</a></li>
+        <li><a href="#contact" data-i18n="nav_contact">contact</a></li>
+      </ul>
+      <div class="nav-controls">
+        <button class="lang-btn" id="langBtn" onclick="toggleLang()" title="Toggle language">
+          <span class="lang-flag" id="langFlag">&#127468;&#127463;</span>
+          <span id="langLabel">EN</span>
+        </button>
+        <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme">
+          <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══ MOBILE MENU ═══ -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#about" data-i18n="nav_about">about</a>
+    <a href="#education" data-i18n="nav_education">education</a>
+    <a href="#projects" data-i18n="nav_projects">projects</a>
+    <a href="#experience" data-i18n="nav_experience">experience</a>
+    <a href="#skills" data-i18n="nav_skills">skills</a>
+    <a href="#contact" data-i18n="nav_contact">contact</a>
+  </div>
+
+  <!-- ═══ HERO ═══ -->
+  <header class="hero">
+    <h1 class="hero-name hero-anim" id="heroName">BIMA<br>ARYA<span class="ac">.</span></h1>
+    <div class="hero-info-anim">
+      <div class="badge"><span class="sdot"></span><span id="badgeText">Available for hire</span></div>
+      <p class="hero-bio" id="heroBio">Full-stack developer &amp; IT communicator at PT ASABRI. Builds AI-powered media intelligence, document management, and internal web systems for corporate-scale operations.</p>
+      <span class="loc-badge" id="locBadge">Jakarta, Indonesia</span>
+    </div>
+  </header>
+
+  <!-- ═══ STATS ═══ -->
+  <div class="stats" id="statsContainer">
+    <!-- rendered by app.js -->
+  </div>
+
+  <!-- ═══ TICKER ═══ -->
+  <div class="ticker-wrap">
+    <div class="ticker-track" id="tickerTrack">
+      <!-- rendered by app.js -->
+    </div>
+  </div>
+
+  <!-- ═══ ABOUT ═══ -->
+  <section class="sec border-top" id="about">
+    <div class="sec-hdr"><span class="sec-num">00 —</span><span class="sec-title" data-i18n="sec_about">About</span></div>
+    <div class="about-grid">
+      <div class="photo-wrap">
+        <div class="photo-frame" id="photoFrame">
+          <img id="photoImg" alt="Bima Aryadinata">
+          <div class="photo-placeholder" id="photoPlaceholder">
+            <div class="ph-icon">
+              <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="about-text" id="aboutText">
+          <!-- rendered by app.js -->
+        </div>
+        <div class="about-pills" id="aboutPills">
+          <!-- rendered by app.js -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ EDUCATION ═══ -->
+  <section class="sec border-top" id="education">
+    <div class="sec-hdr"><span class="sec-num">01 —</span><span class="sec-title" data-i18n="sec_education">Education</span></div>
+    <div id="eduContainer">
+      <!-- rendered by app.js -->
+    </div>
+  </section>
+
+  <!-- ═══ PROJECTS ═══ -->
+  <section class="sec border-top" id="projects">
+    <div class="sec-hdr"><span class="sec-num">02 —</span><span class="sec-title" data-i18n="sec_projects">Selected Projects</span></div>
+    <div class="filter-row" id="filterRow">
+      <!-- rendered by app.js -->
+    </div>
+    <div class="pgrid" id="projectGrid">
+      <!-- rendered by app.js -->
+    </div>
+  </section>
+
+  <!-- ═══ EXPERIENCE (timeline/milestone layout) ═══ -->
+  <section class="sec border-top" id="experience">
+    <div class="sec-hdr"><span class="sec-num">03 —</span><span class="sec-title" data-i18n="sec_experience">Experience</span></div>
+    <div id="expContainer">
+      <!-- rendered by app.js as milestone timeline -->
+    </div>
+  </section>
+
+  <!-- ═══ SKILLS ═══ -->
+  <section class="sec border-top" id="skills">
+    <div class="sec-hdr"><span class="sec-num">04 —</span><span class="sec-title" data-i18n="sec_skills">Skills &amp; Tools</span></div>
+    <div id="skillsContainer">
+      <!-- rendered by app.js -->
+    </div>
+  </section>
+
+  <!-- ═══ CONTACT ═══ -->
+  <section class="contact" id="contact">
+    <div class="cname" id="ctaText">Let's<br>work<span style="color:var(--ac)">.</span></div>
+    <div class="clinks" id="contactLinks">
+      <!-- rendered by app.js -->
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <span class="footer-text" id="footerText">© 2025 Bima Aryadinata</span>
+  </footer>
+
+</div>
+
+<!-- ═══ PROJECT DETAIL MODAL ═══ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-close">
+      <button class="modal-close-btn" onclick="closeModal()" title="Close">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <!-- filled by app.js -->
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCROLL TO TOP ═══ -->
+<button class="scroll-top" id="scrollTopBtn" title="Scroll to top">
+  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
