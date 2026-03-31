@@ -476,6 +476,31 @@ function renderProfileForm() {
       </div>
     </div>
 
+    <!-- ABOUT SECTION -->
+    <div class="profile-section">
+      <div class="profile-section-title">📖 About Section</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">About Paragraphs (EN) — Separated by newline</label>
+          <textarea class="form-textarea" id="profAboutEn" rows="4">${(p.about_en || []).join('\n')}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">About Paragraphs (ID) — Separated by newline</label>
+          <textarea class="form-textarea" id="profAboutId" rows="4">${(p.about_id || []).join('\n')}</textarea>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Highlights/Pills (EN) — Comma separated</label>
+          <input class="form-input" id="profPillsEn" value="${(p.pills_en || []).join(', ')}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Highlights/Pills (ID) — Comma separated</label>
+          <input class="form-input" id="profPillsId" value="${(p.pills_id || []).join(', ')}">
+        </div>
+      </div>
+    </div>
+
     <!-- PHOTO -->
     <div class="profile-section">
       <div class="profile-section-title">📷 Profile Photo</div>
@@ -611,10 +636,15 @@ function handleAdminPhotoUpload(input) {
   if (!input.files || !input.files[0]) return;
   const reader = new FileReader();
   reader.onload = function(e) {
+    if (!adminData.profile) adminData.profile = {};
+    adminData.profile.photo_url = e.target.result;
+    
+    // Also save locally as a session fallback
     localStorage.setItem('pf-photo', e.target.result);
+    
     const preview = document.getElementById('photoPreview');
     if (preview) preview.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;
-    showToast('Photo uploaded!', 'success');
+    showToast('Photo staged! Click "Save All Profile Changes" to upload to DB.', 'success');
   };
   reader.readAsDataURL(input.files[0]);
 }
@@ -641,10 +671,10 @@ async function saveProfile() {
     footer_id: document.getElementById('profFooterId').value.trim(),
     contact_cta_en: document.getElementById('profCtaEn').value,
     contact_cta_id: document.getElementById('profCtaId').value,
-    about_en: adminData.profile.about_en,
-    about_id: adminData.profile.about_id,
-    pills_en: adminData.profile.pills_en,
-    pills_id: adminData.profile.pills_id,
+    about_en: document.getElementById('profAboutEn').value.split('\n').filter(x => x.trim()),
+    about_id: document.getElementById('profAboutId').value.split('\n').filter(x => x.trim()),
+    pills_en: document.getElementById('profPillsEn').value.split(',').map(x => x.trim()).filter(Boolean),
+    pills_id: document.getElementById('profPillsId').value.split(',').map(x => x.trim()).filter(Boolean),
     photo_url: adminData.profile.photo_url || ''
   };
   try {

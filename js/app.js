@@ -69,15 +69,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 ═══════════════════════════════ */
 async function loadFromSupabase() {
   try {
-    const [projects, skills, experiences, profile] = await Promise.all([
+    const [projects, skills, experiences, education, profile] = await Promise.all([
       fetchProjects(),
       fetchSkills(),
       fetchExperiences(),
+      fetchEducation(),
       fetchProfile()
     ]);
     if (projects && projects.length) portfolioData.projects = projects;
     if (skills && skills.length) portfolioData.skills = skills;
     if (experiences && experiences.length) portfolioData.experiences = experiences;
+    if (education && education.length) portfolioData.education = education;
     if (profile) portfolioData.profile = profile;
   } catch (e) {
     console.warn('[Portfolio] Supabase load failed, using defaults:', e);
@@ -179,6 +181,18 @@ function renderAbout() {
   if (pillsC) {
     const pills = currentLang === 'id' ? p.pills_id : p.pills_en;
     pillsC.innerHTML = pills.map(t => `<span class="apill">${t}</span>`).join('');
+  }
+
+  // Update hero photo
+  const photoImg = document.getElementById('photoImg');
+  const photoPlaceholder = document.getElementById('photoPlaceholder');
+  if (photoImg && p.photo_url) {
+    photoImg.src = p.photo_url;
+    photoImg.style.display = 'block';
+    if (photoPlaceholder) photoPlaceholder.style.display = 'none';
+  } else if (photoImg) {
+    photoImg.style.display = 'none';
+    if (photoPlaceholder) photoPlaceholder.style.display = 'flex';
   }
 }
 
