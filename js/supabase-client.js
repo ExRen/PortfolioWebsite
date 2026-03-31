@@ -121,12 +121,14 @@ async function insertRow(table, row) {
 async function updateRow(table, id, updates) {
   const { data, error } = await sbClient.from(table).update(updates).eq('id', id).select();
   if (error) throw error;
-  return data && data.length > 0 ? data[0] : null;
+  if (!data || data.length === 0) throw new Error('Update failed: Row not found in database. You might be trying to edit a dummy fallback record.');
+  return data[0];
 }
 
 async function deleteRow(table, id) {
-  const { error } = await sbClient.from(table).delete().eq('id', id);
+  const { error, count } = await sbClient.from(table).delete({ count: 'exact' }).eq('id', id);
   if (error) throw error;
+  if (count === 0) throw new Error('Delete failed: Row not found in database.');
 }
 
 async function upsertProfile(profileData) {
