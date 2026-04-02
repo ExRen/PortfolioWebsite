@@ -103,7 +103,7 @@ function renderAll() {
 }
 
 /* ═══════════════════════════════
-   RENDER HERO (name, bio, badge, location — all from profile)
+   RENDER HERO (name, tagline, bio, badge, location, CTA — all from profile)
 ═══════════════════════════════ */
 function renderHero() {
   const p = portfolioData.profile;
@@ -120,7 +120,13 @@ function renderHero() {
     ).join('');
   }
 
-  // Bio
+  // Tagline
+  const taglineEl = document.getElementById('heroTagline');
+  if (taglineEl) taglineEl.textContent = currentLang === 'id'
+    ? (p.hero_tagline_id || p.hero_tagline_en || 'Full-Stack Developer & IT Communicator')
+    : (p.hero_tagline_en || 'Full-Stack Developer & IT Communicator');
+
+  // Bio (subtitle)
   const bioEl = document.getElementById('heroBio');
   if (bioEl) bioEl.textContent = currentLang === 'id' ? p.hero_bio_id : p.hero_bio_en;
 
@@ -133,6 +139,12 @@ function renderHero() {
   // Location
   const locEl = document.getElementById('locBadge');
   if (locEl) locEl.textContent = p.location || 'Jakarta, Indonesia';
+
+  // CTA buttons language
+  const ctaProjects = document.querySelector('[data-i18n="cta_projects"]');
+  if (ctaProjects) ctaProjects.textContent = currentLang === 'id' ? 'Lihat Proyek' : 'View Projects';
+  const ctaCv = document.querySelector('[data-i18n="cta_cv"]');
+  if (ctaCv) ctaCv.textContent = currentLang === 'id' ? 'Unduh CV' : 'Download CV';
 }
 
 /* ═══════════════════════════════
@@ -254,12 +266,15 @@ function renderProjects() {
     const catLabel = CATEGORIES.find(c => c.key === p.category);
     const catDisplay = catLabel ? (currentLang === 'id' ? catLabel.label_id : catLabel.label_en) : p.category;
     const hidden = currentFilter !== 'all' && p.category !== currentFilter ? ' hidden' : '';
+    const role = currentLang === 'id' ? (p.role_id || p.role_en || '') : (p.role_en || '');
+    const statusLabel = p.status ? `<span class="p-status">${p.status}</span>` : '';
     return `
       <div class="pc reveal${hidden}" data-cat="${p.category}" data-id="${p.id}" onclick="openProjectModal(${p.id})">
         <div class="p-num">[${String(i + 1).padStart(2, '0')}] — ${catDisplay}</div>
         <div class="p-name">${p.name}</div>
+        ${role ? `<div class="p-role">${role}</div>` : ''}
         <div class="p-desc">${desc}</div>
-        <div class="p-tags">${(p.tags||[]).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+        <div class="p-tags">${(p.tags||[]).map(t => `<span class="tag">${t}</span>`).join('')}${statusLabel}</div>
         <div class="p-arrow">
           <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
         </div>
@@ -323,14 +338,21 @@ function renderTimelineItem(e) {
   const desc = currentLang === 'id' ? (e.desc_id || e.desc_en) : e.desc_en;
   const period = e.period.replace('NOW', currentLang === 'id' ? 'SEKARANG' : 'NOW');
   const isActive = e.period.includes('NOW');
+  const location = currentLang === 'id' ? (e.location_id || e.location_en || '') : (e.location_en || '');
+  const achievement = currentLang === 'id' ? (e.achievement_id || e.achievement_en || '') : (e.achievement_en || '');
+  const toolsHtml = (e.tools && e.tools.length)
+    ? `<div class="timeline-tools">${e.tools.map(t => `<span class="tool-tag">${t}</span>`).join('')}</div>`
+    : '';
   return `
     <div class="timeline-item${isActive ? ' active' : ''}">
       <div class="timeline-dot"></div>
       <div class="timeline-content">
         <div class="timeline-period">${period}</div>
         <div class="timeline-title">${title}</div>
-        <div class="timeline-org">${e.org}</div>
+        <div class="timeline-org">${e.org}${location ? ` · ${location}` : ''}</div>
         <div class="timeline-desc">${desc}</div>
+        ${achievement ? `<div class="timeline-achievement">⭐ ${achievement}</div>` : ''}
+        ${toolsHtml}
       </div>
     </div>`;
 }
@@ -378,8 +400,7 @@ function renderContact() {
   const links = [
     { href: `mailto:${p.contact_email}`, text: p.contact_email, icon: '<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>' },
     { href: p.contact_linkedin, text: 'linkedin.com/in/bima-aryadinata', icon: '<path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>' },
-    { href: p.contact_portfolio, text: 's.id/PortFolioBimaAryadinata', icon: '<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>' },
-    { href: `tel:${p.contact_phone.replace(/\s/g, '')}`, text: p.contact_phone, icon: '<path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>' }
+    { href: p.contact_portfolio, text: 's.id/PortFolioBimaAryadinata', icon: '<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>' }
   ];
   container.innerHTML = links.map(l =>
     `<a class="cl" href="${l.href}" target="_blank" rel="noopener">
@@ -464,6 +485,7 @@ function openProjectModal(id) {
   const detail = currentLang === 'id' ? project.detail_id : project.detail_en;
   const catLabel = CATEGORIES.find(c => c.key === project.category);
   const catDisplay = catLabel ? (currentLang === 'id' ? catLabel.label_id : catLabel.label_en) : project.category;
+  const role = currentLang === 'id' ? (project.role_id || project.role_en || '') : (project.role_en || '');
 
   let linksHTML = '';
   if (project.github_url) {
@@ -482,8 +504,10 @@ function openProjectModal(id) {
   const modalBody = document.getElementById('modalBody');
   if (modalBody) {
     modalBody.innerHTML = `
-      <div class="modal-category">${catDisplay}</div>
+      <div class="modal-category">${catDisplay}${project.status ? ` · ${project.status}` : ''}</div>
       <h2 class="modal-title">${project.name}</h2>
+      ${role ? `<div class="modal-role">${role}</div>` : ''}
+      ${project.highlight ? `<div class="modal-highlight">🏆 ${project.highlight}</div>` : ''}
       <div class="modal-desc">${detail || (currentLang === 'id' ? project.desc_id : project.desc_en)}</div>
       <div class="modal-tags">
         ${(project.tags||[]).map(t => `<span class="tag">${t}</span>`).join('')}

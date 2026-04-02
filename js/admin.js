@@ -153,6 +153,10 @@ function openProjectEditor(project = null) {
   document.getElementById('projName').value = project?.name || '';
   document.getElementById('projCategory').value = project?.category || 'fullstack';
   document.getElementById('projOrder').value = project?.sort_order || adminData.projects.length + 1;
+  document.getElementById('projRoleEn').value = project?.role_en || '';
+  document.getElementById('projRoleId').value = project?.role_id || '';
+  document.getElementById('projHighlight').value = project?.highlight || '';
+  document.getElementById('projStatus').value = project?.status || '';
   document.getElementById('projDescEn').value = project?.desc_en || '';
   document.getElementById('projDescId').value = project?.desc_id || '';
   document.getElementById('projDetailEn').value = project?.detail_en || '';
@@ -172,6 +176,10 @@ async function saveProject() {
     name: document.getElementById('projName').value.trim(),
     category: document.getElementById('projCategory').value,
     sort_order: parseInt(document.getElementById('projOrder').value) || 1,
+    role_en: document.getElementById('projRoleEn').value.trim(),
+    role_id: document.getElementById('projRoleId').value.trim(),
+    highlight: document.getElementById('projHighlight').value.trim(),
+    status: document.getElementById('projStatus').value.trim(),
     desc_en: document.getElementById('projDescEn').value.trim(),
     desc_id: document.getElementById('projDescId').value.trim(),
     detail_en: document.getElementById('projDetailEn').value.trim(),
@@ -239,9 +247,13 @@ function renderSkillsPanel() {
         <input class="form-input" id="newSkillName" placeholder="Skill name">
         <select class="form-select" id="newSkillGroup">
           <option value="Frontend">Frontend</option>
-          <option value="Backend & Infra">Backend & Infra</option>
-          <option value="AI & Data">AI & Data</option>
-          <option value="Certifications">Certifications</option>
+          <option value="Backend">Backend</option>
+          <option value="Database">Database</option>
+          <option value="AI / ML">AI / ML</option>
+          <option value="DevOps & Tools">DevOps & Tools</option>
+          <option value="Design">Design</option>
+          <option value="Cloud">Cloud</option>
+          <option value="Languages">Languages</option>
         </select>
         <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ts);font-family:var(--fm)">
           <input type="checkbox" id="newSkillFeatured"> Featured
@@ -305,21 +317,36 @@ function openExpEditor(exp = null) {
   document.getElementById('expTitleEn').value = exp?.title_en || '';
   document.getElementById('expTitleId').value = exp?.title_id || '';
   document.getElementById('expOrg').value = exp?.org || '';
+  document.getElementById('expLocationEn').value = exp?.location_en || '';
+  document.getElementById('expLocationId').value = exp?.location_id || '';
   document.getElementById('expDescEn').value = exp?.desc_en || '';
   document.getElementById('expDescId').value = exp?.desc_id || '';
+  document.getElementById('expAchievementEn').value = exp?.achievement_en || '';
+  document.getElementById('expAchievementId').value = exp?.achievement_id || '';
   document.getElementById('expOrder').value = exp?.sort_order || adminData.experiences.length + 1;
+  // Tools tags
+  const toolsWrap = document.getElementById('expToolsWrap');
+  const toolsInput = document.getElementById('expToolsInput');
+  toolsWrap.querySelectorAll('.tag-item').forEach(el => el.remove());
+  if (exp?.tools) exp.tools.forEach(t => addTagElement(toolsWrap, toolsInput, t));
   overlay.classList.add('active');
 }
 
 async function saveExperience() {
+  const tools = getTagsFromWrap('expToolsWrap');
   const data = {
     period: document.getElementById('expPeriod').value.trim(),
     type: document.getElementById('expType').value,
     title_en: document.getElementById('expTitleEn').value.trim(),
     title_id: document.getElementById('expTitleId').value.trim(),
     org: document.getElementById('expOrg').value.trim(),
+    location_en: document.getElementById('expLocationEn').value.trim(),
+    location_id: document.getElementById('expLocationId').value.trim(),
     desc_en: document.getElementById('expDescEn').value.trim(),
     desc_id: document.getElementById('expDescId').value.trim(),
+    achievement_en: document.getElementById('expAchievementEn').value.trim(),
+    achievement_id: document.getElementById('expAchievementId').value.trim(),
+    tools: tools,
     sort_order: parseInt(document.getElementById('expOrder').value) || 1
   };
   if (!data.title_en || !data.org) { showToast('Title and org required', 'error'); return; }
@@ -452,6 +479,17 @@ function renderProfileForm() {
       </div>
       <div class="form-row">
         <div class="form-group">
+          <label class="form-label">Hero Tagline (EN)</label>
+          <input class="form-input" id="profTaglineEn" value="${p.hero_tagline_en || ''}">
+          <div class="form-hint">e.g. Full-Stack Developer & IT Communicator</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hero Tagline (ID)</label>
+          <input class="form-input" id="profTaglineId" value="${p.hero_tagline_id || ''}">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
           <label class="form-label">Badge Text (EN)</label>
           <input class="form-input" id="profBadgeEn" value="${p.badge_en || 'Available for hire'}">
         </div>
@@ -511,7 +549,7 @@ function renderProfileForm() {
         <div>
           <input type="file" id="photoFileInput" accept="image/*" style="display:none" onchange="handleAdminPhotoUpload(this)">
           <button class="btn btn-secondary btn-sm" onclick="document.getElementById('photoFileInput').click()">Choose Photo</button>
-          <div class="form-hint" style="margin-top:.3rem">Photo is stored in localStorage and shown on the portfolio</div>
+          <div id="photoUploadStatus" class="form-hint" style="margin-top:.3rem">Photo is uploaded to Supabase Storage</div>
         </div>
       </div>
     </div>
@@ -631,22 +669,33 @@ function collectStats() {
   }));
 }
 
-/* ── PHOTO UPLOAD (admin only) ── */
-function handleAdminPhotoUpload(input) {
+/* ── PHOTO UPLOAD (admin only → Supabase Storage) ── */
+async function handleAdminPhotoUpload(input) {
   if (!input.files || !input.files[0]) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
+  const file = input.files[0];
+  const statusEl = document.getElementById('photoUploadStatus');
+  
+  // Show uploading state
+  if (statusEl) statusEl.textContent = '⏳ Uploading to Supabase Storage...';
+  
+  try {
+    // Upload to Supabase Storage
+    const filePath = await uploadPhoto(file);
+    const publicUrl = getPhotoUrl(filePath);
+    
     if (!adminData.profile) adminData.profile = {};
-    adminData.profile.photo_url = e.target.result;
+    adminData.profile.photo_url = publicUrl;
     
-    // Also save locally as a session fallback
-    localStorage.setItem('pf-photo', e.target.result);
-    
+    // Update preview
     const preview = document.getElementById('photoPreview');
-    if (preview) preview.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;
-    showToast('Photo staged! Click "Save All Profile Changes" to upload to DB.', 'success');
-  };
-  reader.readAsDataURL(input.files[0]);
+    if (preview) preview.innerHTML = `<img src="${publicUrl}" style="width:100%;height:100%;object-fit:cover">`;
+    if (statusEl) statusEl.textContent = '✅ Uploaded! Click Save to persist.';
+    showToast('Photo uploaded! Click "Save All Profile Changes" to save URL to DB.', 'success');
+  } catch (e) {
+    console.error('Photo upload failed:', e);
+    if (statusEl) statusEl.textContent = '❌ Upload failed: ' + e.message;
+    showToast('Photo upload failed: ' + e.message, 'error');
+  }
 }
 
 /* ── SAVE PROFILE ── */
@@ -657,6 +706,8 @@ async function saveProfile() {
 
   const data = {
     hero_name: heroName,
+    hero_tagline_en: document.getElementById('profTaglineEn').value.trim(),
+    hero_tagline_id: document.getElementById('profTaglineId').value.trim(),
     hero_bio_en: document.getElementById('profBioEn').value.trim(),
     hero_bio_id: document.getElementById('profBioId').value.trim(),
     badge_en: document.getElementById('profBadgeEn').value.trim(),
@@ -779,6 +830,49 @@ async function seedDefaults() {
     await loadAdminData(); renderTab();
     showToast('Seeded!', 'success');
   } catch (e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+/* ── RESYNC: Clear old data and replace with data.js content ── */
+async function resyncToDatabase() {
+  if (!confirm('⚠️ This will DELETE all existing data in Supabase and replace it with the latest content from data.js. Continue?')) return;
+  try {
+    showToast('Resyncing... Please wait.', 'success');
+
+    // 1. Delete all existing rows
+    await sbClient.from('projects').delete().neq('id', 0);
+    await sbClient.from('skills').delete().neq('id', 0);
+    await sbClient.from('experiences').delete().neq('id', 0);
+    await sbClient.from('education').delete().neq('id', 0);
+
+    // 2. Insert all defaults from data.js
+    for (const p of DEFAULT_PROJECTS) {
+      const { id, ...rest } = p;
+      await insertRow('projects', rest);
+    }
+    for (const s of DEFAULT_SKILLS) {
+      const { id, ...rest } = s;
+      await insertRow('skills', rest);
+    }
+    for (const exp of DEFAULT_EXPERIENCES) {
+      const { id, ...rest } = exp;
+      await insertRow('experiences', rest);
+    }
+    for (const edu of DEFAULT_EDUCATION) {
+      const { id, ...rest } = edu;
+      await insertRow('education', rest);
+    }
+
+    // 3. Upsert profile
+    await upsertProfile(DEFAULT_PROFILE);
+
+    // 4. Reload
+    await loadAdminData();
+    renderTab();
+    showToast('✅ Resync complete! All data replaced with data.js content.', 'success');
+  } catch (e) {
+    console.error('Resync failed:', e);
+    showToast('Resync failed: ' + e.message, 'error');
+  }
 }
 
 /* ═══════════════════════════════

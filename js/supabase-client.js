@@ -136,3 +136,33 @@ async function upsertProfile(profileData) {
   if (error) throw error;
   return data && data.length > 0 ? data[0] : null;
 }
+
+// ── Storage helpers (profile photo) ──
+async function uploadPhoto(file) {
+  if (!sbClient) throw new Error('Supabase not initialized');
+  const ext = file.name.split('.').pop();
+  const fileName = `profile-photo-${Date.now()}.${ext}`;
+  const filePath = `photos/${fileName}`;
+
+  // Remove old photo if exists
+  try {
+    const { data: list } = await sbClient.storage.from('portfolio-assets').list('photos');
+    if (list && list.length) {
+      const oldFiles = list.map(f => `photos/${f.name}`);
+      await sbClient.storage.from('portfolio-assets').remove(oldFiles);
+    }
+  } catch (e) { console.warn('Could not clean old photos:', e); }
+
+  const { data, error } = await sbClient.storage
+    .from('portfolio-assets')
+    .upload(filePath, file, { cacheControl: '3600', upsert: true });
+  if (error) throw error;
+  return filePath;
+}
+
+function getPhotoUrl(filePath) {
+  if (!sbClient || !filePath) return '';
+  const { data } = sbClient.storage.from('portfolio-assets').getPublicUrl(filePath);
+  return data?.publicUrl || '';
+}
+

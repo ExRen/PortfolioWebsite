@@ -984,6 +984,139 @@ nav::after{
 .scroll-top svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2}
 
 /* ═══════════════════════════════════════════════════
+   NEW CONTENT ELEMENTS
+═══════════════════════════════════════════════════ */
+
+/* ── Hero Tagline ── */
+.hero-tagline{
+  font-family:var(--fd);
+  font-size:1.3rem;
+  font-weight:700;
+  color:var(--tp);
+  letter-spacing:-.02em;
+  margin-bottom:.4rem;
+  line-height:1.3;
+}
+
+/* ── Hero CTA Buttons ── */
+.hero-cta{
+  display:flex;
+  gap:.65rem;
+  margin-top:1rem;
+  flex-wrap:wrap;
+}
+.cta-btn{
+  font-family:var(--fm);
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.04em;
+  padding:10px 22px;
+  border-radius:6px;
+  text-decoration:none;
+  transition:all .25s ease;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+.cta-primary{
+  background:var(--ac);
+  color:#fff;
+  border:1px solid var(--ac);
+}
+.cta-primary:hover{
+  background:var(--ac-hover);
+  border-color:var(--ac-hover);
+  transform:translateY(-1px);
+  box-shadow:0 4px 16px rgba(196,64,26,0.3);
+}
+.cta-secondary{
+  background:transparent;
+  color:var(--ac);
+  border:1px solid var(--ac);
+}
+.cta-secondary:hover{
+  background:var(--ac-light);
+  transform:translateY(-1px);
+}
+
+/* ── Project Role & Status Labels ── */
+.p-role{
+  font-family:var(--fm);
+  font-size:11px;
+  font-weight:600;
+  color:var(--ac);
+  letter-spacing:.03em;
+}
+.p-status{
+  font-family:var(--fm);
+  font-size:9px;
+  font-weight:700;
+  padding:2px 7px;
+  background:var(--ac-light);
+  border:0.5px solid var(--ac);
+  border-radius:3px;
+  color:var(--ac);
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  margin-left:2px;
+}
+
+/* ── Experience Achievement & Tools ── */
+.timeline-achievement{
+  font-size:12px;
+  line-height:1.6;
+  color:var(--ac);
+  font-style:italic;
+  margin-top:.5rem;
+  padding:.5rem .75rem;
+  background:var(--ac-light);
+  border-radius:6px;
+  border-left:2px solid var(--ac);
+}
+.timeline-tools{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+  margin-top:.5rem;
+}
+.tool-tag{
+  font-family:var(--fm);
+  font-size:10px;
+  font-weight:600;
+  padding:2px 7px;
+  border:0.5px solid var(--bd);
+  border-radius:3px;
+  color:var(--ts);
+  transition:all .2s;
+}
+.timeline-item:hover .tool-tag{
+  border-color:var(--ac);
+  color:var(--ac);
+}
+
+/* ── Modal Role & Highlight ── */
+.modal-role{
+  font-family:var(--fm);
+  font-size:13px;
+  font-weight:600;
+  color:var(--ac);
+  margin-bottom:.75rem;
+  letter-spacing:.02em;
+}
+.modal-highlight{
+  font-family:var(--fm);
+  font-size:12px;
+  font-weight:600;
+  color:var(--tp);
+  padding:.6rem 1rem;
+  background:var(--ac-light);
+  border:0.5px solid var(--ac);
+  border-radius:8px;
+  margin-bottom:1rem;
+  letter-spacing:.02em;
+}
+
+/* ═══════════════════════════════════════════════════
    RESPONSIVE BREAKPOINTS
 ═══════════════════════════════════════════════════ */
 
@@ -1048,6 +1181,8 @@ nav::after{
   .hero{padding:2rem 1.15rem 1.5rem}
   .hero-name{font-size:clamp(2.4rem,13vw,3.2rem)}
   .hero-bio{font-size:13.5px}
+  .hero-tagline{font-size:1.1rem}
+  .cta-btn{font-size:11px;padding:8px 16px}
   .stats{padding:.85rem 1.15rem;gap:1.25rem}
   .stat-v{font-size:1.4rem}
   .sec{padding:2rem 1.15rem}

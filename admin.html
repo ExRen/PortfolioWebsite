@@ -50,6 +50,7 @@
       <button class="btn btn-sm btn-secondary" onclick="exportData()">📤 Export</button>
       <button class="btn btn-sm btn-secondary" onclick="importData()">📥 Import</button>
       <button class="btn btn-sm btn-secondary" onclick="seedDefaults()">🌱 Seed</button>
+      <button class="btn btn-sm btn-secondary" onclick="resyncToDatabase()" title="Replace all DB data with data.js">🔄 Resync</button>
       <button class="btn btn-sm btn-danger" onclick="handleLogout()">🚪 Logout</button>
     </div>
   </header>
@@ -141,6 +142,28 @@
           <option value="tools">Tools</option>
         </select>
       </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">ROLE (ENGLISH)</label>
+          <input class="form-input" id="projRoleEn" placeholder="e.g. Full-Stack Developer (Solo)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">ROLE (BAHASA)</label>
+          <input class="form-input" id="projRoleId" placeholder="e.g. Full-Stack Developer (Solo)">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">HIGHLIGHT METRIC</label>
+          <input class="form-input" id="projHighlight" placeholder="e.g. 91.38% Test Accuracy · F1 ~0.896">
+          <div class="form-hint">Key achievement shown in project modal with trophy icon</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">STATUS</label>
+          <input class="form-input" id="projStatus" placeholder="e.g. Production (Internal)">
+          <div class="form-hint">Shown as status badge on project card</div>
+        </div>
+      </div>
       <div class="form-group">
         <label class="form-label">SHORT DESCRIPTION (ENGLISH)</label>
         <textarea class="form-textarea" id="projDescEn" rows="3"></textarea>
@@ -223,6 +246,16 @@
       </div>
       <div class="form-row">
         <div class="form-group">
+          <label class="form-label">LOCATION (ENGLISH)</label>
+          <input class="form-input" id="expLocationEn" placeholder="e.g. Jakarta, Indonesia">
+        </div>
+        <div class="form-group">
+          <label class="form-label">LOCATION (BAHASA)</label>
+          <input class="form-input" id="expLocationId" placeholder="e.g. Jakarta, Indonesia">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
           <label class="form-label">DESCRIPTION (ENGLISH)</label>
           <textarea class="form-textarea" id="expDescEn" rows="3"></textarea>
         </div>
@@ -230,6 +263,23 @@
           <label class="form-label">DESCRIPTION (BAHASA)</label>
           <textarea class="form-textarea" id="expDescId" rows="3"></textarea>
         </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">ACHIEVEMENT (ENGLISH)</label>
+          <textarea class="form-textarea" id="expAchievementEn" rows="2" placeholder="Key achievement highlighted with a star icon"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">ACHIEVEMENT (BAHASA)</label>
+          <textarea class="form-textarea" id="expAchievementId" rows="2"></textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">TOOLS USED</label>
+        <div class="tags-input" id="expToolsWrap">
+          <input class="tags-field" id="expToolsInput" placeholder="Press Enter or comma to add">
+        </div>
+        <div class="form-hint">Tools/technologies shown as tags on the experience card</div>
       </div>
     </div>
     <div class="editor-footer">
@@ -309,6 +359,7 @@
     setupTagsInput('projTagsWrap', 'projTagsInput');
     setupTagsInput('eduTagsEnWrap', 'eduTagsEnInput');
     setupTagsInput('eduTagsIdWrap', 'eduTagsIdInput');
+    setupTagsInput('expToolsWrap', 'expToolsInput');
   });
 </script>
 </body>
