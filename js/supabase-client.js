@@ -166,3 +166,45 @@ function getPhotoUrl(filePath) {
   return data?.publicUrl || '';
 }
 
+// ── Storage helpers (project documentation photos) ──
+async function uploadProjectImage(projectId, file) {
+  if (!sbClient) throw new Error('Supabase not initialized');
+  const ext = file.name.split('.').pop().toLowerCase();
+  const fileName = `img-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const filePath = `projects/${projectId}/${fileName}`;
+
+  const { data, error } = await sbClient.storage
+    .from('portfolio-assets')
+    .upload(filePath, file, { cacheControl: '3600', upsert: true });
+  if (error) throw error;
+
+  // Return the public URL directly
+  const { data: urlData } = sbClient.storage.from('portfolio-assets').getPublicUrl(filePath);
+  return urlData?.publicUrl || '';
+}
+
+async function deleteProjectImage(publicUrl) {
+  if (!sbClient || !publicUrl) return;
+  // Extract file path from public URL
+  // URL format: https://<project>.supabase.co/storage/v1/object/public/portfolio-assets/projects/...
+  const marker = '/portfolio-assets/';
+  const idx = publicUrl.indexOf(marker);
+  if (idx === -1) throw new Error('Invalid storage URL');
+  const filePath = publicUrl.substring(idx + marker.length);
+
+  const { error } = await sbClient.storage.from('portfolio-assets').remove([filePath]);
+  if (error) throw error;
+}
+
+async function deleteAllProjectImages(projectId) {
+  if (!sbClient) return;
+  try {
+    const folderPath = `projects/${projectId}`;
+    const { data: list } = await sbClient.storage.from('portfolio-assets').list(folderPath);
+    if (list && list.length) {
+      const paths = list.map(f => `${folderPath}/${f.name}`);
+      await sbClient.storage.from('portfolio-assets').remove(paths);
+    }
+  } catch (e) { console.warn('Could not clean project images:', e); }
+}
+

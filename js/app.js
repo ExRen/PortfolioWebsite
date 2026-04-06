@@ -501,6 +501,50 @@ function openProjectModal(id) {
     </a>`;
   }
 
+  // Build gallery HTML if project has images
+  const images = project.images || [];
+  let galleryHTML = '';
+  if (images.length) {
+    const slides = images.map((url, i) =>
+      `<div class="gallery-slide${i === 0 ? ' active' : ''}" data-idx="${i}">
+        <img src="${url}" alt="${project.name} — Doc ${i + 1}" loading="lazy" onclick="openLightbox(${id}, ${i})">
+      </div>`
+    ).join('');
+
+    const dots = images.length > 1
+      ? `<div class="gallery-dots">${images.map((_, i) =>
+          `<button class="gallery-dot${i === 0 ? ' active' : ''}" onclick="goToSlide(${i})" aria-label="Photo ${i + 1}"></button>`
+        ).join('')}</div>`
+      : '';
+
+    const arrows = images.length > 1
+      ? `<button class="gallery-arrow gallery-prev" onclick="slideGallery(-1)" aria-label="Previous">
+           <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+         </button>
+         <button class="gallery-arrow gallery-next" onclick="slideGallery(1)" aria-label="Next">
+           <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
+         </button>`
+      : '';
+
+    const counter = images.length > 1
+      ? `<div class="gallery-counter"><span id="galleryIdx">1</span> / ${images.length}</div>`
+      : '';
+
+    galleryHTML = `
+      <div class="modal-gallery-section">
+        <div class="modal-gallery-title">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          ${t.modal_gallery}
+        </div>
+        <div class="gallery-carousel" id="galleryCarousel" data-current="0" data-total="${images.length}">
+          <div class="gallery-track">${slides}</div>
+          ${arrows}
+          ${counter}
+        </div>
+        ${dots}
+      </div>`;
+  }
+
   const modalBody = document.getElementById('modalBody');
   if (modalBody) {
     modalBody.innerHTML = `
@@ -509,6 +553,7 @@ function openProjectModal(id) {
       ${role ? `<div class="modal-role">${role}</div>` : ''}
       ${project.highlight ? `<div class="modal-highlight">🏆 ${project.highlight}</div>` : ''}
       <div class="modal-desc">${detail || (currentLang === 'id' ? project.desc_id : project.desc_en)}</div>
+      ${galleryHTML}
       <div class="modal-tags">
         ${(project.tags||[]).map(t => `<span class="tag">${t}</span>`).join('')}
       </div>
@@ -521,6 +566,109 @@ function openProjectModal(id) {
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
+}
+
+/* ═══════════════════════════════
+   GALLERY CAROUSEL CONTROLS
+═══════════════════════════════ */
+let currentSlide = 0;
+
+function slideGallery(dir) {
+  const carousel = document.getElementById('galleryCarousel');
+  if (!carousel) return;
+  const total = parseInt(carousel.dataset.total);
+  currentSlide = (currentSlide + dir + total) % total;
+  updateGalleryView();
+}
+
+function goToSlide(idx) {
+  currentSlide = idx;
+  updateGalleryView();
+}
+
+function updateGalleryView() {
+  const carousel = document.getElementById('galleryCarousel');
+  if (!carousel) return;
+
+  // Update slides
+  carousel.querySelectorAll('.gallery-slide').forEach((s, i) => {
+    s.classList.toggle('active', i === currentSlide);
+  });
+
+  // Update dots
+  document.querySelectorAll('.gallery-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === currentSlide);
+  });
+
+  // Update counter
+  const counter = document.getElementById('galleryIdx');
+  if (counter) counter.textContent = currentSlide + 1;
+
+  // Update carousel data
+  carousel.dataset.current = currentSlide;
+}
+
+/* ═══════════════════════════════
+   LIGHTBOX (full-size image view)
+═══════════════════════════════ */
+let lightboxImages = [];
+let lightboxIdx = 0;
+
+function openLightbox(projectId, idx) {
+  const project = portfolioData.projects.find(p => p.id === projectId);
+  if (!project || !project.images || !project.images.length) return;
+
+  lightboxImages = project.images;
+  lightboxIdx = idx;
+
+  // Create lightbox if not exists
+  let lb = document.getElementById('lightboxOverlay');
+  if (!lb) {
+    lb = document.createElement('div');
+    lb.id = 'lightboxOverlay';
+    lb.className = 'lightbox-overlay';
+    lb.innerHTML = `
+      <button class="lightbox-close" onclick="closeLightbox()">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <button class="lightbox-arrow lightbox-prev" onclick="lightboxNav(-1)">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <img class="lightbox-img" id="lightboxImg" alt="Full-size documentation photo">
+      <button class="lightbox-arrow lightbox-next" onclick="lightboxNav(1)">
+        <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
+      </button>
+      <div class="lightbox-counter" id="lightboxCounter"></div>
+    `;
+    lb.addEventListener('click', (e) => { if (e.target === lb) closeLightbox(); });
+    document.body.appendChild(lb);
+  }
+
+  updateLightbox();
+  lb.classList.add('active');
+}
+
+function updateLightbox() {
+  const img = document.getElementById('lightboxImg');
+  const counter = document.getElementById('lightboxCounter');
+  if (img) img.src = lightboxImages[lightboxIdx];
+  if (counter) counter.textContent = `${lightboxIdx + 1} / ${lightboxImages.length}`;
+
+  // Show/hide arrows
+  const prevBtn = document.querySelector('.lightbox-prev');
+  const nextBtn = document.querySelector('.lightbox-next');
+  if (prevBtn) prevBtn.style.display = lightboxImages.length > 1 ? 'flex' : 'none';
+  if (nextBtn) nextBtn.style.display = lightboxImages.length > 1 ? 'flex' : 'none';
+}
+
+function lightboxNav(dir) {
+  lightboxIdx = (lightboxIdx + dir + lightboxImages.length) % lightboxImages.length;
+  updateLightbox();
+}
+
+function closeLightbox() {
+  const lb = document.getElementById('lightboxOverlay');
+  if (lb) lb.classList.remove('active');
 }
 
 function closeModal() {
@@ -539,6 +687,20 @@ function setupModalClose() {
     });
   }
   document.addEventListener('keydown', (e) => {
+    // Lightbox takes priority
+    const lb = document.getElementById('lightboxOverlay');
+    if (lb && lb.classList.contains('active')) {
+      if (e.key === 'Escape') closeLightbox();
+      else if (e.key === 'ArrowLeft') lightboxNav(-1);
+      else if (e.key === 'ArrowRight') lightboxNav(1);
+      return;
+    }
+    // Gallery carousel in modal
+    const carousel = document.getElementById('galleryCarousel');
+    if (carousel && document.getElementById('modalOverlay')?.classList.contains('active')) {
+      if (e.key === 'ArrowLeft') slideGallery(-1);
+      else if (e.key === 'ArrowRight') slideGallery(1);
+    }
     if (e.key === 'Escape') closeModal();
   });
 }

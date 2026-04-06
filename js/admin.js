@@ -17,6 +17,7 @@ let adminData = {
 };
 let currentTab = 'projects';
 let editingItem = null;
+let projectImages = []; // URLs of images for current project being edited
 
 /* ═══════════════════════════════
    INIT
@@ -148,6 +149,7 @@ function renderProjectsTable() {
 
 function openProjectEditor(project = null) {
   editingItem = project;
+  projectImages = project?.images ? [...project.images] : [];
   const overlay = document.getElementById('editorOverlay');
   document.getElementById('editorTitle').textContent = project ? 'Edit Project' : 'Add Project';
   document.getElementById('projName').value = project?.name || '';
@@ -167,6 +169,10 @@ function openProjectEditor(project = null) {
   const tagsInput = document.getElementById('projTagsInput');
   tagsWrap.querySelectorAll('.tag-item').forEach(el => el.remove());
   if (project?.tags) project.tags.forEach(t => addTagElement(tagsWrap, tagsInput, t));
+  // Render existing images
+  renderProjectImagePreview();
+  const statusEl = document.getElementById('projImgUploadStatus');
+  if (statusEl) statusEl.textContent = '';
   overlay.classList.add('active');
 }
 
@@ -186,7 +192,8 @@ async function saveProject() {
     detail_id: document.getElementById('projDetailId').value.trim(),
     github_url: document.getElementById('projGithub').value.trim(),
     live_url: document.getElementById('projLive').value.trim(),
-    tags: tags
+    tags: tags,
+    images: projectImages
   };
   if (!data.name) { showToast('Name required', 'error'); return; }
   try {
@@ -736,6 +743,98 @@ async function saveProfile() {
 }
 
 /* ═══════════════════════════════
+   PROJECT DOCUMENTATION IMAGES
+═══════════════════════════════ */
+function renderProjectImagePreview() {
+  const grid = document.getElementById('projImgPreviewGrid');
+  if (!grid) return;
+  if (!projectImages.length) {
+    grid.innerHTML = '<div class="img-preview-empty">No documentation photos uploaded yet</div>';
+    return;
+  }
+  grid.innerHTML = projectImages.map((url, i) => `
+    <div class="img-preview-item" data-idx="${i}">
+      <img src="${url}" alt="Doc photo ${i + 1}" loading="lazy">
+      <button class="img-preview-delete" onclick="removeProjectImage(${i})" title="Remove image">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="img-preview-idx">${i + 1}</div>
+    </div>
+  `).join('');
+}
+
+async function handleProjectImagesSelect(input) {
+  if (!input.files || !input.files.length) return;
+  await processProjectImageFiles(Array.from(input.files));
+  input.value = ''; // reset so same files can be re-selected
+}
+
+function handleProjectImagesDrop(files) {
+  const imageFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
+  if (imageFiles.length) processProjectImageFiles(imageFiles);
+}
+
+async function processProjectImageFiles(files) {
+  const statusEl = document.getElementById('projImgUploadStatus');
+  const maxSize = 5 * 1024 * 1024; // 5MB
+  
+  // Validate file sizes
+  const oversized = files.filter(f => f.size > maxSize);
+  if (oversized.length) {
+    showToast(`${oversized.length} file(s) exceed 5MB limit`, 'error');
+    files = files.filter(f => f.size <= maxSize);
+    if (!files.length) return;
+  }
+
+  // Need a project ID for the storage path
+  // If creating new project, we need to save first, then upload
+  const projectId = editingItem?.id;
+  if (!projectId) {
+    // For new projects, upload to a temp folder
+    if (statusEl) statusEl.textContent = '⏳ Uploading images...';
+  } else {
+    if (statusEl) statusEl.textContent = `⏳ Uploading ${files.length} image(s)...`;
+  }
+
+  let uploaded = 0;
+  for (const file of files) {
+    try {
+      const storageId = projectId || 'temp-' + Date.now();
+      const publicUrl = await uploadProjectImage(storageId, file);
+      projectImages.push(publicUrl);
+      uploaded++;
+      if (statusEl) statusEl.textContent = `⏳ Uploaded ${uploaded}/${files.length}...`;
+    } catch (e) {
+      console.error('Upload failed for', file.name, e);
+      showToast(`Failed to upload ${file.name}: ${e.message}`, 'error');
+    }
+  }
+
+  renderProjectImagePreview();
+  if (statusEl) statusEl.textContent = uploaded > 0
+    ? `✅ ${uploaded} image(s) uploaded! Click "Save Project" to persist.`
+    : '';
+  if (uploaded > 0) showToast(`${uploaded} image(s) uploaded!`, 'success');
+}
+
+async function removeProjectImage(idx) {
+  if (idx < 0 || idx >= projectImages.length) return;
+  const url = projectImages[idx];
+  
+  // Try to delete from storage
+  try {
+    await deleteProjectImage(url);
+  } catch (e) {
+    console.warn('Could not delete from storage:', e);
+    // Still remove from array even if storage delete fails
+  }
+
+  projectImages.splice(idx, 1);
+  renderProjectImagePreview();
+  showToast('Image removed', 'success');
+}
+
+/* ═══════════════════════════════
    TAGS INPUT HELPER
 ═══════════════════════════════ */
 function setupTagsInput(wrapId, inputId) {
@@ -775,6 +874,7 @@ function closeEditor() {
   const overlay = document.getElementById('editorOverlay');
   if (overlay) overlay.classList.remove('active');
   editingItem = null;
+  projectImages = [];
 }
 
 function closeExpEditor() {

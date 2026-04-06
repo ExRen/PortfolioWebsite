@@ -187,6 +187,22 @@
         </div>
         <div class="form-hint">Press Enter or comma to add a tag</div>
       </div>
+      <!-- DOCUMENTATION PHOTOS -->
+      <div class="form-group">
+        <label class="form-label">📷 DOCUMENTATION PHOTOS</label>
+        <div class="img-upload-area" id="projImgUploadArea" onclick="document.getElementById('projImgFileInput').click()">
+          <input type="file" id="projImgFileInput" accept="image/*" multiple style="display:none" onchange="handleProjectImagesSelect(this)">
+          <div class="img-upload-icon">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <div class="img-upload-text">Click or drag images here</div>
+          <div class="img-upload-hint">PNG, JPG, WEBP — max 5MB each</div>
+        </div>
+        <div id="projImgUploadStatus" class="form-hint" style="margin-top:.4rem"></div>
+        <div class="img-preview-grid" id="projImgPreviewGrid">
+          <!-- populated by JS -->
+        </div>
+      </div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">GITHUB URL</label>
@@ -360,6 +376,21 @@
     setupTagsInput('eduTagsEnWrap', 'eduTagsEnInput');
     setupTagsInput('eduTagsIdWrap', 'eduTagsIdInput');
     setupTagsInput('expToolsWrap', 'expToolsInput');
+
+    // Drag-and-drop for project images
+    const dropArea = document.getElementById('projImgUploadArea');
+    if (dropArea) {
+      ['dragenter', 'dragover'].forEach(evt => {
+        dropArea.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); dropArea.classList.add('drag-over'); });
+      });
+      ['dragleave', 'drop'].forEach(evt => {
+        dropArea.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); dropArea.classList.remove('drag-over'); });
+      });
+      dropArea.addEventListener('drop', e => {
+        const files = e.dataTransfer.files;
+        if (files.length) handleProjectImagesDrop(files);
+      });
+    }
   });
 </script>
 </body>

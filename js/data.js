@@ -18,7 +18,8 @@ const DEFAULT_PROJECTS = [
     highlight: '91.38% Test Accuracy · F1 Macro ~0.896',
     status: 'Production (Internal)',
     github_url: '',
-    live_url: ''
+    live_url: '',
+    images: []
   },
   {
     id: 2, sort_order: 2, category: 'fullstack',
@@ -32,7 +33,8 @@ const DEFAULT_PROJECTS = [
     tags: ['React', 'NestJS', 'Prisma', 'PostgreSQL', 'Redis', 'Puppeteer', 'Tailwind CSS', 'Ant Design'],
     status: 'Production (Internal)',
     github_url: '',
-    live_url: ''
+    live_url: '',
+    images: []
   },
   {
     id: 3, sort_order: 3, category: 'fullstack',
@@ -46,7 +48,8 @@ const DEFAULT_PROJECTS = [
     tags: ['Next.js 14', 'NestJS', 'Prisma', 'PostgreSQL', 'MinIO', 'Redis', 'Docker', 'LDAP', 'Turborepo'],
     status: 'Production (Internal)',
     github_url: '',
-    live_url: ''
+    live_url: '',
+    images: []
   },
   {
     id: 4, sort_order: 4, category: 'fullstack',
@@ -60,7 +63,8 @@ const DEFAULT_PROJECTS = [
     tags: ['React', 'Supabase', 'PostgreSQL', 'Tailwind CSS'],
     status: 'Production (Internal)',
     github_url: '',
-    live_url: ''
+    live_url: '',
+    images: []
   },
   {
     id: 5, sort_order: 5, category: 'fullstack',
@@ -74,7 +78,8 @@ const DEFAULT_PROJECTS = [
     tags: ['React', 'Vite', 'Tailwind CSS', 'Zustand', 'Supabase', 'Tesseract.js'],
     status: 'Personal Project',
     github_url: '',
-    live_url: ''
+    live_url: '',
+    images: []
   },
   {
     id: 6, sort_order: 6, category: 'tools',
@@ -88,7 +93,8 @@ const DEFAULT_PROJECTS = [
     tags: ['Node.js', 'whatsapp-web.js', 'Supabase', 'Node-cron'],
     status: 'Personal Project',
     github_url: '',
-    live_url: ''
+    live_url: '',
+    images: []
   }
 ];
 
@@ -256,6 +262,8 @@ const TRANSLATIONS = {
     sg_cert: 'Certifications',
     modal_close: 'Close', modal_github: 'GitHub', modal_live: 'Live Demo',
     modal_detail: 'Project Details',
+    modal_gallery: 'Documentation',
+    modal_gallery_empty: 'No documentation photos yet',
     footer_admin: 'Admin',
     click_detail: 'Click for details →'
   },
@@ -272,6 +280,8 @@ const TRANSLATIONS = {
     sg_cert: 'Sertifikasi',
     modal_close: 'Tutup', modal_github: 'GitHub', modal_live: 'Demo Langsung',
     modal_detail: 'Detail Proyek',
+    modal_gallery: 'Dokumentasi',
+    modal_gallery_empty: 'Belum ada foto dokumentasi',
     footer_admin: 'Admin',
     click_detail: 'Klik untuk detail →'
   }
