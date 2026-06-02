@@ -109,6 +109,29 @@ async function fetchProfile() {
   return data;
 }
 
+// ── Analytics helpers ──
+async function fetchAnalytics() {
+  if (!sbClient) return [];
+  const { data, error } = await sbClient
+    .from('analytics_events')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) { console.error('[Supabase] fetchAnalytics:', error); return []; }
+  return data;
+}
+
+async function logAnalyticsEvent(eventType, eventValue, sessionId) {
+  if (!sbClient) return;
+  // Fire and forget
+  sbClient.from('analytics_events').insert({
+    event_type: eventType,
+    event_value: eventValue,
+    session_id: sessionId
+  }).then(({error}) => {
+    if (error) console.error('[Supabase] logAnalyticsEvent:', error);
+  });
+}
+
 // ── CRUD helpers (authenticated) ──
 // Using .select() without .single() to avoid 406 errors,
 // then returning the first row from the array result.

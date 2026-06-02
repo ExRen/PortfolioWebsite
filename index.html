@@ -11,9 +11,34 @@
   <meta property="og:description" content="Building AI-powered internal tools and enterprise digital systems. IndoBERT fine-tuning, React, NestJS, PostgreSQL.">
   <meta property="og:url" content="https://portfolio-bima-eosin.vercel.app/">
   <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Bima Aryadinata — Full-Stack Developer">
+  <meta property="og:image" content="https://portfolio-bima-eosin.vercel.app/images/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Bima Aryadinata — Full-Stack Developer &amp; IT Communicator">
   <meta name="twitter:description" content="AI-powered media intelligence, enterprise workflow systems, and full-stack development at PT ASABRI.">
+  <meta name="twitter:image" content="https://portfolio-bima-eosin.vercel.app/images/og-image.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Bima Aryadinata",
+    "url": "https://portfolio-bima-eosin.vercel.app/",
+    "jobTitle": "Full-Stack Developer & IT Communicator",
+    "alumniOf": {
+      "@type": "EducationalOrganization",
+      "name": "Universitas Sriwijaya"
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Jakarta",
+      "addressCountry": "ID"
+    },
+    "sameAs": [
+      "https://linkedin.com/in/bima-aryadinata",
+      "https://github.com/ExRen"
+    ]
+  }
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/syne@5/index.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono@5/index.css">
   <link rel="stylesheet" href="css/style.css">
@@ -44,6 +69,7 @@
         <li><a href="#experience" data-i18n="nav_experience">experience</a></li>
         <li><a href="#skills" data-i18n="nav_skills">skills</a></li>
         <li><a href="#contact" data-i18n="nav_contact">contact</a></li>
+        <li style="margin-left:8px;"><a href="mailto:bimaaryadinata01@gmail.com" style="border:1px solid currentColor; border-radius:999px; padding:4px 12px; transition:background-color 0.2s; white-space:nowrap;" onmouseover="this.style.backgroundColor='var(--fg)'; this.style.color='var(--bg)'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='currentColor'">Hire Me</a></li>
       </ul>
       <div class="nav-controls">
         <button class="lang-btn" id="langBtn" onclick="toggleLang()" title="Toggle language">
@@ -104,7 +130,7 @@
     <div class="about-grid">
       <div class="photo-wrap">
         <div class="photo-frame" id="photoFrame">
-          <img id="photoImg" alt="Bima Aryadinata — Informatics Engineer">
+          <img id="photoImg" alt="Bima Aryadinata — Informatics Engineer" onerror="this.onerror=null; this.style.display='none'; const ph = document.getElementById('photoPlaceholder'); if(ph) ph.style.display='flex';">
           <div class="photo-placeholder" id="photoPlaceholder">
             <div class="ph-icon">
               <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -138,6 +164,22 @@
       <!-- rendered by app.js -->
     </div>
     <div class="pgrid" id="projectGrid">
+      <!-- rendered by app.js -->
+    </div>
+  </section>
+
+  <!-- ═══ CURRENTLY BUILDING ═══ -->
+  <section class="sec border-top" id="building">
+    <div class="sec-hdr"><span class="sec-num" id="buildingNum">02.5 —</span><span class="sec-title" id="buildingTitle" data-i18n="sec_building">Currently Building</span></div>
+    <div id="buildingGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+      <!-- rendered by app.js -->
+    </div>
+  </section>
+
+  <!-- ═══ GITHUB STATUS ═══ -->
+  <section class="sec border-top" id="github">
+    <div class="sec-hdr"><span class="sec-num">02.6 —</span><span class="sec-title" data-i18n="sec_github">GitHub Activity</span></div>
+    <div id="githubContainer" class="github-grid">
       <!-- rendered by app.js -->
     </div>
   </section>

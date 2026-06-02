@@ -61,6 +61,7 @@
     <button class="tab-btn" data-tab="experience" onclick="switchTab('experience')">EXPERIENCE</button>
     <button class="tab-btn" data-tab="education" onclick="switchTab('education')">EDUCATION</button>
     <button class="tab-btn" data-tab="profile" onclick="switchTab('profile')">PROFILE</button>
+    <button class="tab-btn" data-tab="analytics" onclick="switchTab('analytics')">ANALYTICS</button>
   </div>
 
   <!-- PROJECTS PANEL -->
@@ -115,6 +116,32 @@
   <div class="tab-panel" id="panel-profile">
     <div class="panel-header"><h2>Profile & Settings</h2></div>
     <div id="profilePanel"></div>
+  </div>
+
+  <!-- ANALYTICS PANEL -->
+  <div class="tab-panel" id="panel-analytics">
+    <div class="panel-header"><h2>Analytics Dashboard</h2></div>
+    <div id="analyticsPanel" style="display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+        <div class="form-group" style="background: var(--bg); border: 1px solid var(--bd); padding: 15px; border-radius: 8px;">
+          <h3 style="margin: 0 0 10px 0; font-size: 14px; color: var(--ts);">Unique Visitors</h3>
+          <p id="analyticsVisitors" style="margin: 0; font-size: 28px; font-weight: bold; color: var(--fg);">-</p>
+        </div>
+        <div class="form-group" style="background: var(--bg); border: 1px solid var(--bd); padding: 15px; border-radius: 8px;">
+          <h3 style="margin: 0 0 10px 0; font-size: 14px; color: var(--ts);">Total CV Downloads</h3>
+          <p id="analyticsCVs" style="margin: 0; font-size: 28px; font-weight: bold; color: var(--fg);">-</p>
+        </div>
+      </div>
+      
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>SECTION</th><th>VISITS (TOTAL)</th></tr></thead>
+          <tbody id="analyticsSectionsTbody">
+            <tr><td colspan="2">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 

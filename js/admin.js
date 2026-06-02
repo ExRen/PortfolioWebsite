@@ -13,7 +13,8 @@ let adminData = {
   skills: [],
   experiences: [],
   education: [],
-  profile: null
+  profile: null,
+  analytics: []
 };
 let currentTab = 'projects';
 let editingItem = null;
@@ -94,14 +95,15 @@ function showDashboard() {
 ═══════════════════════════════ */
 async function loadAdminData() {
   try {
-    const [projects, skills, experiences, education, profile] = await Promise.all([
-      fetchProjects(), fetchSkills(), fetchExperiences(), fetchEducation(), fetchProfile()
+    const [projects, skills, experiences, education, profile, analytics] = await Promise.all([
+      fetchProjects(), fetchSkills(), fetchExperiences(), fetchEducation(), fetchProfile(), fetchAnalytics()
     ]);
     adminData.projects = projects && projects.length ? projects : DEFAULT_PROJECTS;
     adminData.skills = skills && skills.length ? skills : DEFAULT_SKILLS;
     adminData.experiences = experiences && experiences.length ? experiences : DEFAULT_EXPERIENCES;
     adminData.education = education && education.length ? education : DEFAULT_EDUCATION;
     adminData.profile = profile || DEFAULT_PROFILE;
+    adminData.analytics = analytics || [];
   } catch (e) {
     console.error('Load failed:', e);
     showToast('Failed to load data', 'error');
@@ -125,6 +127,52 @@ function renderTab() {
     case 'experience': renderExperienceTable(); break;
     case 'education': renderEducationTable(); break;
     case 'profile': renderProfileForm(); break;
+    case 'analytics': renderAnalyticsPanel(); break;
+  }
+}
+
+/* ═══════════════════════════════
+   ANALYTICS PANEL
+═══════════════════════════════ */
+function renderAnalyticsPanel() {
+  const visitorsEl = document.getElementById('analyticsVisitors');
+  const cvsEl = document.getElementById('analyticsCVs');
+  const sectionsTbody = document.getElementById('analyticsSectionsTbody');
+  
+  if (!visitorsEl || !cvsEl || !sectionsTbody) return;
+  
+  const events = adminData.analytics;
+  
+  // Calculate unique visitors (count distinct session_id for 'pageview')
+  const visitors = new Set();
+  let cvDownloads = 0;
+  const sectionViews = {};
+  
+  events.forEach(e => {
+    if (e.event_type === 'pageview') {
+      visitors.add(e.session_id);
+    } else if (e.event_type === 'cv_download') {
+      cvDownloads++;
+    } else if (e.event_type === 'section_view') {
+      sectionViews[e.event_value] = (sectionViews[e.event_value] || 0) + 1;
+    }
+  });
+  
+  visitorsEl.textContent = visitors.size;
+  cvsEl.textContent = cvDownloads;
+  
+  // Sort sections by view count descending
+  const sortedSections = Object.entries(sectionViews).sort((a, b) => b[1] - a[1]);
+  
+  if (sortedSections.length === 0) {
+    sectionsTbody.innerHTML = '<tr><td colspan="2">No data available yet.</td></tr>';
+  } else {
+    sectionsTbody.innerHTML = sortedSections.map(([section, count]) => `
+      <tr>
+        <td style="text-transform: capitalize;">${section.replace('-', ' ')}</td>
+        <td>${count}</td>
+      </tr>
+    `).join('');
   }
 }
 

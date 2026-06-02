@@ -17,6 +17,11 @@ const DEFAULT_PROJECTS = [
     tags: ['Python', 'Streamlit', 'HuggingFace', 'IndoBERT', 'Node.js', 'Crawlee', 'Supabase', 'PostgreSQL'],
     highlight: '91.38% Test Accuracy · F1 Macro ~0.896',
     status: 'Production (Internal)',
+    metrics: [
+      { label_en: 'Test Accuracy', label_id: 'Akurasi Pengujian', value: '91.38%' },
+      { label_en: 'F1 Macro Score', label_id: 'Skor F1 Macro', value: '0.896' },
+      { label_en: 'Sentiment Classes', label_id: 'Kelas Sentimen', value: '3' }
+    ],
     github_url: '',
     live_url: '',
     images: []
@@ -32,6 +37,11 @@ const DEFAULT_PROJECTS = [
     detail_id: 'ROCKET adalah platform enterprise terintegrasi untuk tim Komunikasi PT ASABRI guna mengelola proyek dan memantau serapan anggaran secara real-time. Fitur meliputi alur persetujuan bertingkat (Staf → Kabid → GM), kontrol akses berbasis peran, dan pembuatan laporan PDF otomatis. Menggantikan pelacakan berbasis spreadsheet manual di seluruh divisi. Sistem ini menangani pengguna bersamaan lintas departemen dengan Prisma ORM untuk operasi database type-safe dan caching Redis untuk performa.',
     tags: ['React', 'NestJS', 'Prisma', 'PostgreSQL', 'Redis', 'Puppeteer', 'Tailwind CSS', 'Ant Design'],
     status: 'Production (Internal)',
+    metrics: [
+      { label_en: 'Approval Workflow', label_id: 'Alur Persetujuan', value: '3-Level' },
+      { label_en: 'Type Safety', label_id: 'Keamanan Tipe', value: 'Strict' },
+      { label_en: 'Caching', label_id: 'Caching', value: 'Redis-powered' }
+    ],
     github_url: '',
     live_url: '',
     images: []
@@ -47,6 +57,11 @@ const DEFAULT_PROJECTS = [
     detail_id: 'DRMS (Document Records Management System) adalah sistem pengarsipan digital komprehensif dengan manajemen siklus hidup retensi otomatis dan alur kerja persetujuan 2 tahap untuk pemusnahan dokumen resmi. Dibangun sesuai regulasi internal PT ASABRI (PER/HK.01/35-AS/XII/2022). Arsitektur mencakup skema PostgreSQL 9 tabel, penyimpanan objek MinIO, caching Redis, dan autentikasi enterprise LDAP.',
     tags: ['Next.js 14', 'NestJS', 'Prisma', 'PostgreSQL', 'MinIO', 'Redis', 'Docker', 'LDAP', 'Turborepo'],
     status: 'Production (Internal)',
+    metrics: [
+      { label_en: 'Compliance', label_id: 'Kepatuhan', value: 'PER/HK.01/35' },
+      { label_en: 'DB Tables', label_id: 'Tabel DB', value: '9' },
+      { label_en: 'Enterprise Auth', label_id: 'Autentikasi Perusahaan', value: 'LDAP' }
+    ],
     github_url: '',
     live_url: '',
     images: []
@@ -95,6 +110,36 @@ const DEFAULT_PROJECTS = [
     github_url: '',
     live_url: '',
     images: []
+  }
+];
+
+const DEFAULT_CURRENT_BUILDING = [
+  {
+    name_en: 'Instagram Media Scraper',
+    name_id: 'Scraper Media Instagram',
+    description_en: 'Internal tool for social media monitoring using instagrapi and Python to bypass login restrictions.',
+    description_id: 'Alat internal untuk pemantauan media sosial menggunakan instagrapi dan Python untuk menembus batasan login.',
+    status_en: 'Active',
+    status_id: 'Aktif',
+    stack: ['Python', 'instagrapi', 'Streamlit']
+  },
+  {
+    name_en: 'TikTok Scraper API',
+    name_id: 'API Scraper TikTok',
+    description_en: 'Refactoring network interception functionalities via Playwright to extract video metadata and bypass bot detection.',
+    description_id: 'Refactoring fungsi intersepsi jaringan via Playwright untuk mengekstrak metadata video dan menembus deteksi bot.',
+    status_en: 'In Progress',
+    status_id: 'Dalam Proses',
+    stack: ['Playwright', 'Python', 'FastAPI']
+  },
+  {
+    name_en: 'E-Commerce Cloudinary Integration',
+    name_id: 'Integrasi Cloudinary E-Commerce',
+    description_en: 'Migrating product images from local storage to a centralized CDN system for the production VPS server.',
+    description_id: 'Migrasi gambar produk dari penyimpanan lokal ke sistem CDN terpusat untuk server VPS produksi.',
+    status_en: 'Planning',
+    status_id: 'Perencanaan',
+    stack: ['Node.js', 'Cloudinary', 'Multer']
   }
 ];
 
@@ -223,8 +268,9 @@ const DEFAULT_PROFILE = {
   contact_email: 'bimaaryadinata01@gmail.com',
   contact_linkedin: 'https://linkedin.com/in/bima-aryadinata',
   contact_portfolio: 'https://s.id/PortFolioBimaAryadinata',
-  footer_en: '© 2025 Bima Aryadinata',
-  footer_id: '© 2025 Bima Aryadinata',
+  contact_github: 'https://github.com/ExRen',
+  footer_en: '© 2026 Bima Aryadinata',
+  footer_id: '© 2026 Bima Aryadinata',
   contact_cta_en: 'Let\'s<br>work<span style="color:var(--ac)">.</span>',
   contact_cta_id: 'Mari<br>bekerja<span style="color:var(--ac)">.</span>',
   about_en: [
@@ -265,7 +311,9 @@ const TRANSLATIONS = {
     modal_gallery: 'Documentation',
     modal_gallery_empty: 'No documentation photos yet',
     footer_admin: 'Admin',
-    click_detail: 'Click for details →'
+    click_detail: 'Click for details →',
+    sec_github: 'GitHub Activity',
+    sec_building: 'Currently Building'
   },
   id: {
     nav_about: 'tentang', nav_projects: 'proyek', nav_skills: 'keahlian',
@@ -283,7 +331,9 @@ const TRANSLATIONS = {
     modal_gallery: 'Dokumentasi',
     modal_gallery_empty: 'Belum ada foto dokumentasi',
     footer_admin: 'Admin',
-    click_detail: 'Klik untuk detail →'
+    click_detail: 'Klik untuk detail →',
+    sec_github: 'Aktivitas GitHub',
+    sec_building: 'Sedang Dibangun'
   }
 };
 

@@ -11,6 +11,7 @@ let currentTheme = 'light';
 let currentFilter = 'all';
 let portfolioData = {
   projects: DEFAULT_PROJECTS,
+  building: DEFAULT_CURRENT_BUILDING,
   skills: DEFAULT_SKILLS,
   experiences: DEFAULT_EXPERIENCES,
   education: DEFAULT_EDUCATION,
@@ -62,7 +63,54 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Page entrance
   document.querySelector('.wrap').classList.add('page-enter');
+
+  // Initialize Analytics
+  initAnalytics();
 });
+
+/* ═══════════════════════════════
+   ANALYTICS TRACKING
+═══════════════════════════════ */
+function initAnalytics() {
+  if (typeof logAnalyticsEvent !== 'function') return;
+
+  // 1. Session Management
+  let sessionId = sessionStorage.getItem('pf-session-id');
+  if (!sessionId) {
+    sessionId = 'sess_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    sessionStorage.setItem('pf-session-id', sessionId);
+  }
+
+  // 2. Page View Tracking
+  logAnalyticsEvent('pageview', window.location.pathname || '/', sessionId);
+
+  // 3. CV Download Tracking
+  const cvBtn = document.getElementById('cvDownloadBtn');
+  if (cvBtn) {
+    cvBtn.addEventListener('click', () => {
+      logAnalyticsEvent('cv_download', 'cv_pdf', sessionId);
+    });
+  }
+
+  // 4. Section View Tracking
+  const trackedSections = new Set();
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const sectionId = entry.target.id;
+        if (sectionId && !trackedSections.has(sectionId)) {
+          // Log only once per session per section
+          trackedSections.add(sectionId);
+          logAnalyticsEvent('section_view', sectionId, sessionId);
+        }
+      }
+    });
+  }, { threshold: 0.5 }); // Trigger when 50% of section is visible
+
+  document.querySelectorAll('section.sec').forEach(sec => {
+    observer.observe(sec);
+  });
+}
 
 /* ═══════════════════════════════
    SUPABASE DATA LOADING
@@ -96,6 +144,8 @@ function renderAll() {
   renderAbout();
   renderEducation();
   renderProjects();
+  renderBuilding();
+  renderGithubStatus();
   renderExperience();
   renderSkills();
   renderContact();
@@ -286,6 +336,603 @@ function renderProjects() {
 }
 
 /* ═══════════════════════════════
+   RENDER CURRENTLY BUILDING
+═══════════════════════════════ */
+function renderBuilding() {
+  const grid = document.getElementById('buildingGrid');
+  if (!grid || !portfolioData.building || !portfolioData.building.length) return;
+
+  grid.innerHTML = portfolioData.building.map(b => {
+    const name = currentLang === 'id' ? b.name_id : b.name_en;
+    const desc = currentLang === 'id' ? b.description_id : b.description_en;
+    const status = currentLang === 'id' ? b.status_id : b.status_en;
+    
+    // Status styling colors
+    let stColor = 'gray'; let stBg = 'rgba(255,255,255,0.1)';
+    if(b.status_en === 'Active') { stColor = '#4ade80'; stBg = 'rgba(74, 222, 128, 0.1)'; }
+    if(b.status_en === 'In Progress') { stColor = '#fbbf24'; stBg = 'rgba(251, 191, 36, 0.1)'; }
+    if(b.status_en === 'Planning') { stColor = '#60a5fa'; stBg = 'rgba(96, 165, 250, 0.1)'; }
+
+    return `
+      <div class="reveal" style="border: 1px solid var(--border); border-radius: 12px; padding: 20px; transition: border-color 0.2s;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+          <h3 style="font-size: 16px; margin: 0;">${name}</h3>
+          <span style="font-size: 11px; padding: 2px 8px; border-radius: 999px; background: ${stBg}; color: ${stColor}; font-weight: 500;">
+            ${status}
+          </span>
+        </div>
+        <p style="font-size: 14px; color: var(--text); opacity: 0.8; margin-bottom: 16px; line-height: 1.5;">${desc}</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+          ${b.stack.map(s => `<span class="tag" style="padding: 2px 6px; font-size: 11px;">${s}</span>`).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ═══════════════════════════════
+   RENDER GITHUB STATUS — v3
+   Layout baru: Stats prominently di atas, heatmap full-width,
+   streak + lang side-by-side, repos grid di bawah.
+   Dark mode: glow effect, kontras tinggi, border accent.
+═══════════════════════════════ */
+async function renderGithubStatus() {
+  const container = document.getElementById('githubContainer');
+  if (!container) return;
+
+  const username = 'ExRen';
+  const isDark   = currentTheme === 'dark';
+  const ac       = isDark ? '#E5673A' : '#C4401A';
+
+  // Streak dari demolab
+  const tColor   = isDark ? 'b0b0b0' : '666666';
+  const streakUrl = `https://streak-stats.demolab.com/?user=${username}&theme=transparent&hide_border=true&stroke=${isDark?'E5673A':'C4401A'}&ring=${isDark?'E5673A':'C4401A'}&fire=${isDark?'E5673A':'C4401A'}&currStreakNum=${isDark?'E5673A':'C4401A'}&sideNums=${tColor}&sideLabels=${tColor}&dates=${tColor}&background=00000000`;
+
+  // Contribution heatmap
+  const chartColor = isDark ? '4ade80' : '2da44e';
+  const chartUrl   = `https://ghchart.rshah.org/${chartColor}/${username}`;
+
+  const t = {
+    activity : currentLang === 'id' ? 'Aktivitas Kontribusi' : 'Contribution Activity',
+    streak   : currentLang === 'id' ? 'Streak & Total'       : 'Streak & Total',
+    repos    : currentLang === 'id' ? 'Repositori'           : 'Repositories',
+    stars    : currentLang === 'id' ? 'Bintang'              : 'Stars',
+    followers: 'Followers',
+    contribs : currentLang === 'id' ? 'Kontribusi'           : 'Contributions',
+    langs    : currentLang === 'id' ? 'Bahasa Terpakai'      : 'Top Languages',
+    pinned   : currentLang === 'id' ? 'Repositori Pilihan'   : 'Pinned Repositories',
+    noDesc   : currentLang === 'id' ? 'Tidak ada deskripsi.' : 'No description.',
+    noRepos  : currentLang === 'id' ? 'Tidak ada repositori.' : 'No repositories.',
+    streakNA : currentLang === 'id' ? 'Streak tidak tersedia' : 'Streak unavailable',
+  };
+
+  container.innerHTML = `
+    <div class="ghv3-root">
+
+      <!-- ══ PROFIL ROW ══════════════════════════════════ -->
+      <div class="ghv3-profile-row">
+        <div class="ghv3-avatar-wrap">
+          <div class="ghv3-avatar-skel" id="ghAvatarSkel"></div>
+          <img id="ghAvatar" src="" alt="${username}" class="ghv3-avatar" style="display:none"
+               onerror="this.style.display='none';document.getElementById('ghAvatarSkel').style.display='block'">
+        </div>
+        <div class="ghv3-profile-info">
+          <h3 class="ghv3-name ghv3-skel" id="ghName">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h3>
+          <span class="ghv3-username">@ExRen</span>
+          <p class="ghv3-bio ghv3-skel" id="ghBio">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+          <div class="ghv3-meta-row">
+            <span class="ghv3-meta-chip" id="ghFollowWrap">
+              <svg viewBox="0 0 16 16" width="12" fill="currentColor">
+                <path d="M2 5.5a3.5 3.5 0 115.898 2.549 5.507 5.507 0 013.035 5.174.75.75 0 11-1.499.03.4005.4005 0 00-.4-.4H3.5a.4.4 0 00-.4.4.75.75 0 01-1.499-.03 5.507 5.507 0 013.035-5.174A3.501 3.501 0 012 5.5z"/>
+              </svg>
+              <span id="ghFollowCount">–</span> followers · <span id="ghFollowingCount">–</span> following
+            </span>
+            <span class="ghv3-meta-chip" id="ghLocChip" style="display:none">
+              <svg viewBox="0 0 16 16" width="12" fill="currentColor">
+                <path d="M11.536 3.464a5 5 0 010 7.072L8 14.071 4.464 10.536a5 5 0 117.072-7.072zM8 9a2 2 0 100-4 2 2 0 000 4z"/>
+              </svg>
+              <span id="ghLocation"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ HERO STATS ══════════════════════════════════ -->
+      <div class="ghv3-hero-stats" id="ghHeroStats" style="display:none">
+        <div class="ghv3-stat-card ghv3-stat-accent">
+          <div class="ghv3-stat-num" id="ghSnRepos">–</div>
+          <div class="ghv3-stat-label">${t.repos}</div>
+        </div>
+        <div class="ghv3-stat-card">
+          <div class="ghv3-stat-num" id="ghSnStars">–</div>
+          <div class="ghv3-stat-label">${t.stars}</div>
+        </div>
+        <div class="ghv3-stat-card">
+          <div class="ghv3-stat-num" id="ghSnFollowers">–</div>
+          <div class="ghv3-stat-label">${t.followers}</div>
+        </div>
+        <div class="ghv3-stat-card">
+          <div class="ghv3-stat-num" id="ghSnLangs">–</div>
+          <div class="ghv3-stat-label">${t.langs}</div>
+        </div>
+      </div>
+
+      <!-- ══ CONTRIBUTION HEATMAP ═══════════════════════ -->
+      <div class="ghv3-section">
+        <div class="ghv3-section-hd">
+          <span class="ghv3-section-dot"></span>
+          ${t.activity}
+        </div>
+        <div class="ghv3-heatmap-box">
+          <img
+            src="${chartUrl}"
+            class="ghv3-heatmap-img"
+            alt="Contribution Graph"
+            loading="lazy"
+            onerror="this.parentElement.style.display='none'">
+        </div>
+      </div>
+
+      <!-- ══ STREAK + LANGUAGE ═══════════════════════════ -->
+      <div class="ghv3-mid-row">
+
+        <!-- Streak -->
+        <div class="ghv3-section ghv3-section-streak">
+          <div class="ghv3-section-hd">
+            <span class="ghv3-section-dot"></span>
+            ${t.streak}
+          </div>
+          <div class="ghv3-streak-wrap">
+            <img
+              src="${streakUrl}"
+              class="ghv3-streak-img"
+              alt="GitHub Streak"
+              loading="lazy"
+              onerror="this.style.display='none';document.getElementById('ghStreakNA').style.display='flex'">
+            <div id="ghStreakNA" class="ghv3-na-box" style="display:none">
+              <svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>
+              </svg>
+              ${t.streakNA}
+            </div>
+          </div>
+        </div>
+
+        <!-- Language bar -->
+        <div class="ghv3-section ghv3-section-lang" id="ghLangSection" style="display:none">
+          <div class="ghv3-section-hd">
+            <span class="ghv3-section-dot"></span>
+            ${t.langs}
+          </div>
+          <div class="ghv3-lang-bar" id="ghLangBar"></div>
+          <div class="ghv3-lang-legend" id="ghLangLegend"></div>
+        </div>
+
+      </div>
+
+      <!-- ══ REPOS GRID ═══════════════════════════════════ -->
+      <div class="ghv3-section">
+        <div class="ghv3-section-hd">
+          <span class="ghv3-section-dot"></span>
+          ${t.pinned}
+        </div>
+        <div class="ghv3-repos-grid" id="ghPinnedGrid">
+          ${[1,2,3,4,5,6].map(() =>
+            `<div class="ghv3-repo-skel ghv3-skel"></div>`
+          ).join('')}
+        </div>
+      </div>
+
+    </div>
+
+    <style>
+      /* ══ ROOT ══════════════════════════════════════════ */
+      .ghv3-root {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+
+      /* ══ SKELETON ══════════════════════════════════════ */
+      .ghv3-skel {
+        background: var(--border) !important;
+        border-radius: 6px;
+        animation: ghv3Pulse 1.6s ease-in-out infinite;
+        color: transparent !important;
+        border-color: transparent !important;
+      }
+      .ghv3-avatar-skel {
+        width: 64px; height: 64px; border-radius: 50%;
+        background: var(--border);
+        animation: ghv3Pulse 1.6s ease-in-out infinite;
+      }
+      .ghv3-repo-skel { min-height: 100px; border-radius: 10px; }
+      @keyframes ghv3Pulse {
+        0%,100% { opacity:1 } 50% { opacity:0.3 }
+      }
+
+      /* ══ PROFIL ROW ════════════════════════════════════ */
+      .ghv3-profile-row {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+      .ghv3-avatar-wrap { position:relative; flex-shrink:0; }
+      .ghv3-avatar {
+        width: 64px; height: 64px;
+        border-radius: 50%;
+        border: 2px solid ${ac};
+        box-shadow: 0 0 0 4px ${isDark ? 'rgba(229,103,58,0.15)' : 'rgba(196,64,26,0.1)'};
+        object-fit: cover;
+      }
+      .ghv3-profile-info { flex:1; min-width:0; }
+      .ghv3-name {
+        font-size: 20px; font-weight: 700;
+        color: var(--fg); margin: 0 0 2px;
+        letter-spacing: -0.02em;
+      }
+      .ghv3-username {
+        font-size: 13px; font-family: var(--font-mono, monospace);
+        color: ${ac}; opacity:0.85;
+        display: block; margin-bottom: 4px;
+      }
+      .ghv3-bio {
+        font-size: 13px; color: var(--text); opacity:${isDark ? '0.85' : '0.7'};
+        margin: 0 0 8px; line-height: 1.4;
+      }
+      .ghv3-meta-row { display:flex; flex-wrap:wrap; gap:8px; }
+      .ghv3-meta-chip {
+        display: inline-flex; align-items: center; gap: 4px;
+        font-size: 12px; color: var(--text); opacity: ${isDark ? '0.85' : '0.65'};
+        background: ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'};
+        border: 1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'var(--border)'};
+        border-radius: 999px; padding: 3px 10px;
+      }
+
+      /* ══ HERO STATS ════════════════════════════════════ */
+      .ghv3-hero-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+      @media (max-width: 560px) {
+        .ghv3-hero-stats { grid-template-columns: repeat(2, 1fr); }
+      }
+      .ghv3-stat-card {
+        position: relative;
+        padding: 18px 12px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: ${isDark
+          ? 'rgba(255,255,255,0.03)'
+          : 'rgba(0,0,0,0.02)'};
+        text-align: center;
+        transition: border-color 0.2s, transform 0.2s;
+        overflow: hidden;
+      }
+      .ghv3-stat-card:hover {
+        border-color: ${ac};
+        transform: translateY(-2px);
+      }
+      .ghv3-stat-card.ghv3-stat-accent {
+        border-color: ${isDark ? 'rgba(229,103,58,0.5)' : 'rgba(196,64,26,0.4)'};
+        background: ${isDark
+          ? 'rgba(229,103,58,0.08)'
+          : 'rgba(196,64,26,0.05)'};
+      }
+      .ghv3-stat-card.ghv3-stat-accent::before {
+        content: '';
+        position: absolute; top:0; left:50%; transform:translateX(-50%);
+        width: 60%; height: 2px;
+        background: ${ac};
+        border-radius: 0 0 4px 4px;
+      }
+      .ghv3-stat-num {
+        font-size: 32px;
+        font-weight: 800;
+        font-family: var(--font-mono, monospace);
+        color: ${ac};
+        line-height: 1;
+        margin-bottom: 6px;
+        ${isDark ? `text-shadow: 0 0 24px rgba(229,103,58,0.7), 0 0 48px rgba(229,103,58,0.25);` : ''}
+      }
+      .ghv3-stat-label {
+        font-size: 11px;
+        font-family: var(--font-mono, monospace);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text);
+        opacity: 0.5;
+      }
+
+      /* ══ SECTION HEADER ════════════════════════════════ */
+      .ghv3-section-hd {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 11px;
+        font-family: var(--font-mono, monospace);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text);
+        opacity: 0.5;
+        margin-bottom: 12px;
+      }
+      .ghv3-section-dot {
+        display: inline-block;
+        width: 6px; height: 6px; border-radius: 50%;
+        background: ${ac};
+        box-shadow: ${isDark ? `0 0 6px ${ac}` : 'none'};
+        flex-shrink: 0;
+      }
+
+      /* ══ HEATMAP ═══════════════════════════════════════ */
+      .ghv3-heatmap-box {
+        width: 100%;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid ${isDark ? 'rgba(229,103,58,0.2)' : 'rgba(0,0,0,0.08)'};
+        background: ${isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'};
+        padding: 14px 10px;
+      }
+      .ghv3-heatmap-img {
+        width: 100%; height: auto; display: block;
+        ${isDark
+          ? 'filter: brightness(1.4) contrast(1.2) saturate(1.3);'
+          : 'filter: saturate(1.1);'}
+      }
+
+      /* ══ MID ROW (streak + langs) ══════════════════════ */
+      .ghv3-mid-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      @media (max-width: 600px) {
+        .ghv3-mid-row { grid-template-columns: 1fr; }
+      }
+      .ghv3-section-streak, .ghv3-section-lang {
+        border: 1px solid ${isDark ? 'rgba(229,103,58,0.18)' : 'rgba(0,0,0,0.07)'};
+        border-radius: 12px;
+        padding: 16px;
+        background: ${isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)'};
+      }
+      .ghv3-streak-wrap { width:100%; }
+      .ghv3-streak-img  { width:100%; height:auto; display:block; }
+      .ghv3-na-box {
+        display:flex; align-items:center; gap:8px;
+        font-size:12px; color:var(--text); opacity:0.45;
+        padding:12px; border:1px dashed var(--border); border-radius:8px;
+      }
+
+      /* ══ LANGUAGE BAR ══════════════════════════════════ */
+      .ghv3-lang-bar {
+        display: flex; height: 10px;
+        border-radius: 999px; overflow: hidden;
+        gap: 3px; margin-bottom: 14px;
+        background: var(--border);
+      }
+      .ghv3-lang-seg {
+        border-radius: 999px; flex-shrink: 0;
+        transition: flex 0.4s ease;
+      }
+      .ghv3-lang-legend {
+        display: flex; flex-wrap: wrap; gap: 8px 14px;
+      }
+      .ghv3-lang-item {
+        display: flex; align-items: center; gap: 5px;
+        font-size: 11px; color: var(--text); opacity: 0.75;
+        font-family: var(--font-mono, monospace);
+      }
+      .ghv3-lang-dot {
+        width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0;
+        ${isDark ? 'box-shadow: 0 0 4px currentColor;' : ''}
+      }
+
+      /* ══ REPOS GRID ════════════════════════════════════ */
+      .ghv3-repos-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      @media (max-width: 540px) {
+        .ghv3-repos-grid { grid-template-columns: 1fr; }
+      }
+      .gh-pinned-card {
+        display: flex; flex-direction: column;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px;
+        text-decoration: none;
+        background: ${isDark ? 'rgba(255,255,255,0.025)' : 'rgba(0,0,0,0.015)'};
+        transition: border-color 0.18s, background 0.18s, transform 0.18s;
+        gap: 6px;
+      }
+      .gh-pinned-card:hover {
+        border-color: ${ac};
+        background: ${isDark ? 'rgba(229,103,58,0.07)' : 'rgba(196,64,26,0.04)'};
+        transform: translateY(-2px);
+        ${isDark ? `box-shadow: 0 4px 20px rgba(229,103,58,0.15);` : ''}
+      }
+      .gh-pinned-header {
+        display: flex; align-items: center; gap: 6px;
+        font-size: 13px; font-weight: 600;
+        color: ${ac};
+      }
+      .gh-repo-icon { opacity: 0.7; flex-shrink:0; }
+      .gh-repo-name { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .gh-repo-badge {
+        font-size: 10px; padding: 1px 6px; border-radius: 999px;
+        border: 1px solid ${isDark ? 'rgba(229,103,58,0.4)' : 'rgba(196,64,26,0.3)'};
+        color: ${ac}; flex-shrink:0; font-family:var(--font-mono,monospace);
+      }
+      .gh-repo-desc {
+        font-size: 12px; color: var(--text); opacity: 0.65;
+        line-height: 1.4; flex:1;
+      }
+      .gh-repo-footer {
+        display: flex; align-items: center; gap: 10px;
+        font-size: 11px; color: var(--text); opacity: 0.55;
+        margin-top: 4px;
+      }
+      .gh-repo-lang { display:flex; align-items:center; gap:4px; }
+      .gh-lang-dot  { width:9px; height:9px; border-radius:50%; }
+      .gh-repo-stars{ display:flex; align-items:center; gap:3px; }
+    </style>
+  `;
+
+  // ─── GitHub REST API ──────────────────────────────────────────
+  try {
+    const hdrs = { 'Accept': 'application/vnd.github.v3+json' };
+    const [userRes, reposRes] = await Promise.all([
+      fetch(`https://api.github.com/users/${username}`, { headers: hdrs }),
+      fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`, { headers: hdrs })
+    ]);
+
+    // ── User ──
+    const clearSkel = (id, text) => {
+      const el = document.getElementById(id);
+      if (el) { el.classList.remove('ghv3-skel'); el.textContent = text; }
+    };
+
+    if (userRes.ok) {
+      const u = await userRes.json();
+      const avatarEl  = document.getElementById('ghAvatar');
+      const avatarSkel = document.getElementById('ghAvatarSkel');
+      if (avatarEl) { avatarEl.src = u.avatar_url; avatarEl.style.display = 'block'; }
+      if (avatarSkel) avatarSkel.style.display = 'none';
+      clearSkel('ghName', u.name || username);
+      clearSkel('ghBio',  u.bio  || '');
+      const fc = document.getElementById('ghFollowCount');
+      const fi = document.getElementById('ghFollowingCount');
+      if (fc) fc.textContent = u.followers;
+      if (fi) fi.textContent = u.following;
+      if (u.location) {
+        const lc = document.getElementById('ghLocChip');
+        const ll = document.getElementById('ghLocation');
+        if (lc) lc.style.display = 'inline-flex';
+        if (ll) ll.textContent = u.location;
+      }
+      const snFoll = document.getElementById('ghSnFollowers');
+      if (snFoll) snFoll.textContent = u.followers;
+    } else {
+      clearSkel('ghName', username);
+      clearSkel('ghBio', '');
+    }
+
+    // ── Repos ──
+    if (reposRes.ok) {
+      const repos = await reposRes.json();
+
+      // Hero stats
+      const totalStars = repos.reduce((s, r) => s + (r.stargazers_count || 0), 0);
+      const langMap    = {};
+      repos.forEach(r => { if (r.language) langMap[r.language] = (langMap[r.language] || 0) + 1; });
+      const topLangs   = Object.entries(langMap).sort((a,b)=>b[1]-a[1]);
+
+      const snR = document.getElementById('ghSnRepos');
+      const snS = document.getElementById('ghSnStars');
+      const snL = document.getElementById('ghSnLangs');
+      if (snR) snR.textContent = repos.length;
+      if (snS) snS.textContent = totalStars;
+      if (snL) snL.textContent = topLangs.length;
+
+      const heroEl = document.getElementById('ghHeroStats');
+      if (heroEl) heroEl.style.display = 'grid';
+
+      // Language bar
+      if (topLangs.length) {
+        const total    = topLangs.reduce((s,[,v])=>s+v,0);
+        const top5     = topLangs.slice(0,5);
+        const langSec  = document.getElementById('ghLangSection');
+        const langBar  = document.getElementById('ghLangBar');
+        const langLeg  = document.getElementById('ghLangLegend');
+        if (langSec) langSec.style.display = 'flex';
+        if (langBar) {
+          langBar.innerHTML = top5.map(([lang, cnt]) => {
+            const pct = (cnt/total*100).toFixed(1);
+            return `<div class="ghv3-lang-seg" style="width:${pct}%;background:${getLangColor(lang)}" title="${lang} ${pct}%"></div>`;
+          }).join('');
+        }
+        if (langLeg) {
+          langLeg.innerHTML = top5.map(([lang, cnt]) => {
+            const pct = (cnt/total*100).toFixed(1);
+            return `<div class="ghv3-lang-item">
+              <span class="ghv3-lang-dot" style="background:${getLangColor(lang)}"></span>
+              ${lang}&nbsp;<span style="opacity:0.45">${pct}%</span>
+            </div>`;
+          }).join('');
+        }
+      }
+
+      // Pinned repos grid
+      const gridEl = document.getElementById('ghPinnedGrid');
+      if (gridEl) {
+        const show = repos.slice(0, 6);
+        if (!show.length) {
+          gridEl.innerHTML = `<p style="color:var(--text);opacity:0.45;font-size:13px;grid-column:1/-1">${t.noRepos}</p>`;
+        } else {
+          gridEl.innerHTML = show.map(repo => `
+            <a href="${repo.html_url}" target="_blank" rel="noopener" class="gh-pinned-card">
+              <div class="gh-pinned-header">
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" class="gh-repo-icon">
+                  <path d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8z"/>
+                </svg>
+                <span class="gh-repo-name">${repo.name}</span>
+                <span class="gh-repo-badge">Public</span>
+              </div>
+              <div class="gh-repo-desc">${repo.description
+                ? repo.description
+                : `<span style="opacity:0.4">${t.noDesc}</span>`}</div>
+              <div class="gh-repo-footer">
+                ${repo.language ? `
+                  <span class="gh-repo-lang">
+                    <span class="gh-lang-dot" style="background:${getLangColor(repo.language)}"></span>
+                    ${repo.language}
+                  </span>` : ''}
+                <span class="gh-repo-stars">
+                  <svg viewBox="0 0 16 16" width="12" fill="currentColor">
+                    <path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/>
+                  </svg>
+                  ${repo.stargazers_count}
+                </span>
+              </div>
+            </a>
+          `).join('');
+        }
+      }
+    } else {
+      const gridEl = document.getElementById('ghPinnedGrid');
+      if (gridEl) gridEl.innerHTML = `<p style="color:var(--text);opacity:0.45;font-size:13px;grid-column:1/-1">${t.noRepos}</p>`;
+    }
+
+  } catch (err) {
+    console.error('[GitHub] Fetch error:', err);
+    clearSkel = (id, text) => {
+      const el = document.getElementById(id);
+      if (el) { el.classList.remove('ghv3-skel'); el.textContent = text || ''; }
+    };
+    ['ghName','ghBio'].forEach(id => clearSkel(id, id==='ghName'?username:''));
+    const avatarSkel = document.getElementById('ghAvatarSkel');
+    if (avatarSkel) avatarSkel.style.display = 'none';
+  }
+
+  setupScrollReveal();
+}
+
+function getLangColor(lang) {
+  const colors = {
+    JavaScript:'#f1e05a', TypeScript:'#3178c6',
+    Python:'#3572A5',     HTML:'#e34c26',
+    CSS:'#563d7c',        PHP:'#4F5D95',
+    Vue:'#41b883',        'C++':'#f34b7d',
+    Java:'#b07219',       Go:'#00ADD8',
+    Rust:'#dea584',       Shell:'#89e051',
+    Kotlin:'#A97BFF',     Swift:'#F05138'
+  };
+  return colors[lang] || '#8b949e';
+}
+
+
+/* ═══════════════════════════════
    RENDER EXPERIENCE — MILESTONE TIMELINE
    Sub-sections: Professional & Organization
 ═══════════════════════════════ */
@@ -400,7 +1047,8 @@ function renderContact() {
   const links = [
     { href: `mailto:${p.contact_email}`, text: p.contact_email, icon: '<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>' },
     { href: p.contact_linkedin, text: 'linkedin.com/in/bima-aryadinata', icon: '<path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>' },
-    { href: p.contact_portfolio, text: 's.id/PortFolioBimaAryadinata', icon: '<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>' }
+    { href: p.contact_portfolio, text: 's.id/PortFolioBimaAryadinata', icon: '<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>' },
+    { href: p.contact_github || 'https://github.com/ExRen', text: 'github.com/ExRen', icon: '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/>' }
   ];
   container.innerHTML = links.map(l =>
     `<a class="cl" href="${l.href}" target="_blank" rel="noopener">
@@ -416,7 +1064,10 @@ function renderFooter() {
   const p = portfolioData.profile;
   const ftEl = document.getElementById('footerText');
   const faEl = document.getElementById('footerAdmin');
-  if (ftEl) ftEl.textContent = currentLang === 'id' ? (p.footer_id || '© 2025 Bima Aryadinata') : (p.footer_en || '© 2025 Bima Aryadinata');
+  const year = new Date().getFullYear();
+  if (ftEl) ftEl.textContent = currentLang === 'id'
+    ? (p.footer_id || `© ${year} Bima Aryadinata`).replace('2025', year)
+    : (p.footer_en || `© ${year} Bima Aryadinata`).replace('2025', year);
   if (faEl) faEl.textContent = TRANSLATIONS[currentLang].footer_admin;
 }
 
@@ -427,6 +1078,7 @@ function toggleTheme() {
   currentTheme = currentTheme === 'light' ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', currentTheme);
   localStorage.setItem('pf-theme', currentTheme);
+  renderGithubStatus(); // Update github cards colors
 }
 
 /* ═══════════════════════════════
@@ -545,6 +1197,18 @@ function openProjectModal(id) {
       </div>`;
   }
 
+  let metricsHTML = '';
+  if (project.metrics && project.metrics.length > 0) {
+    metricsHTML = `<div class="modal-metrics" style="display:flex; flex-wrap:wrap; gap:8px; margin: 16px 0;">
+      ${project.metrics.map(m => `
+        <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:6px; padding:6px 10px; font-size:12px;">
+          <strong style="color:var(--fg); display:block; font-family:var(--font-mono);">${m.value}</strong>
+          <span style="color:var(--text); opacity:0.8;">${currentLang === 'id' ? m.label_id : m.label_en}</span>
+        </div>
+      `).join('')}
+    </div>`;
+  }
+
   const modalBody = document.getElementById('modalBody');
   if (modalBody) {
     modalBody.innerHTML = `
@@ -553,6 +1217,7 @@ function openProjectModal(id) {
       ${role ? `<div class="modal-role">${role}</div>` : ''}
       ${project.highlight ? `<div class="modal-highlight">🏆 ${project.highlight}</div>` : ''}
       <div class="modal-desc">${detail || (currentLang === 'id' ? project.desc_id : project.desc_en)}</div>
+      ${metricsHTML}
       ${galleryHTML}
       <div class="modal-tags">
         ${(project.tags||[]).map(t => `<span class="tag">${t}</span>`).join('')}
