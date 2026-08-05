@@ -3,7 +3,8 @@
 -- Run AFTER creating bucket in Dashboard → Storage
 -- ═══════════════════════════════════════════════════
 
--- Drop existing policies if any (safe to re-run)
+-- This standalone script only replaces the canonical policies. Run the phase1 migration first;
+-- it fails closed when any non-canonical storage write policy exists.
 DROP POLICY IF EXISTS "Public read portfolio-assets" ON storage.objects;
 DROP POLICY IF EXISTS "Auth upload portfolio-assets" ON storage.objects;
 DROP POLICY IF EXISTS "Auth update portfolio-assets" ON storage.objects;
@@ -19,16 +20,17 @@ USING (bucket_id = 'portfolio-assets');
 CREATE POLICY "Auth upload portfolio-assets"
 ON storage.objects FOR INSERT
 TO authenticated
-WITH CHECK (bucket_id = 'portfolio-assets');
+WITH CHECK (bucket_id = 'portfolio-assets' AND public.is_admin());
 
 -- Allow authenticated update
 CREATE POLICY "Auth update portfolio-assets"
 ON storage.objects FOR UPDATE
 TO authenticated
-USING (bucket_id = 'portfolio-assets');
+USING (bucket_id = 'portfolio-assets' AND public.is_admin())
+WITH CHECK (bucket_id = 'portfolio-assets' AND public.is_admin());
 
 -- Allow authenticated delete
 CREATE POLICY "Auth delete portfolio-assets"
 ON storage.objects FOR DELETE
 TO authenticated
-USING (bucket_id = 'portfolio-assets');
+USING (bucket_id = 'portfolio-assets' AND public.is_admin());

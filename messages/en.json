@@ -1,0 +1,73 @@
+{
+  "nav": {
+    "about": "about",
+    "education": "education",
+    "certs": "certifications",
+    "projects": "projects",
+    "experience": "experience",
+    "skills": "skills",
+    "contact": "contact",
+    "hireMe": "Start a Conversation",
+    "language": "Switch language",
+    "theme": "Switch theme",
+    "menu": "Open menu",
+    "close": "Close menu"
+  },
+  "section": {
+    "about": "About",
+    "education": "Education",
+    "certs": "Certifications",
+    "projects": "Selected Projects",
+    "building": "Currently Building",
+    "github": "GitHub Activity",
+    "experience": "Experience",
+    "skills": "Skills & Tools",
+    "contact": "Contact"
+  },
+  "experience": {
+    "professional": "Professional Experience",
+    "organization": "Organization"
+  },
+  "filter": {
+    "all": "All",
+    "ai": "AI / ML",
+    "fullstack": "Full-Stack",
+    "tools": "Tools"
+  },
+  "project": {
+    "clickDetail": "Click for details →",
+    "github": "GitHub",
+    "liveDemo": "Live Demo",
+    "modalDetail": "Project Details",
+    "modalGallery": "Documentation",
+    "modalGalleryEmpty": "No documentation photos yet",
+    "close": "Close project details"
+  },
+  "hero": {
+    "viewProjects": "See My Work",
+    "downloadCv": "Download CV"
+  },
+  "contact": {
+    "name": "Your Name",
+    "email": "Your Email",
+    "message": "Message...",
+    "send": "Send Message"
+  },
+  "misc": {
+    "now": "NOW",
+    "sending": "Sending...",
+    "messageSent": "Message sent — I'll reply via email soon.",
+    "messageFailed": "Couldn't send. Email me directly."
+  },
+  "footer": {
+    "admin": "Admin"
+  },
+  "theme": {
+    "dark": "Dark",
+    "light": "Light"
+  },
+  "lang": {
+    "en": "EN",
+    "id": "ID"
+  }
+}

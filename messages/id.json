@@ -1,0 +1,73 @@
+{
+  "nav": {
+    "about": "tentang",
+    "education": "pendidikan",
+    "certs": "sertifikasi",
+    "projects": "proyek",
+    "experience": "pengalaman",
+    "skills": "keahlian",
+    "contact": "kontak",
+    "hireMe": "Mulai Diskusi",
+    "language": "Ganti bahasa",
+    "theme": "Ganti tema",
+    "menu": "Buka menu",
+    "close": "Tutup menu"
+  },
+  "section": {
+    "about": "Tentang Saya",
+    "education": "Pendidikan",
+    "certs": "Sertifikasi",
+    "projects": "Proyek Pilihan",
+    "building": "Sedang Dibangun",
+    "github": "Aktivitas GitHub",
+    "experience": "Pengalaman",
+    "skills": "Keahlian & Alat",
+    "contact": "Kontak"
+  },
+  "experience": {
+    "professional": "Pengalaman Profesional",
+    "organization": "Organisasi"
+  },
+  "filter": {
+    "all": "Semua",
+    "ai": "AI / ML",
+    "fullstack": "Full-Stack",
+    "tools": "Alat"
+  },
+  "project": {
+    "clickDetail": "Klik untuk detail →",
+    "github": "GitHub",
+    "liveDemo": "Demo Langsung",
+    "modalDetail": "Detail Proyek",
+    "modalGallery": "Dokumentasi",
+    "modalGalleryEmpty": "Belum ada foto dokumentasi",
+    "close": "Tutup detail proyek"
+  },
+  "hero": {
+    "viewProjects": "Lihat Karya Saya",
+    "downloadCv": "Unduh CV"
+  },
+  "contact": {
+    "name": "Nama Anda",
+    "email": "Email Anda",
+    "message": "Pesan...",
+    "send": "Kirim Pesan"
+  },
+  "misc": {
+    "now": "SEKARANG",
+    "sending": "Mengirim...",
+    "messageSent": "Pesan terkirim — saya akan segera membalas via email.",
+    "messageFailed": "Gagal mengirim. Silakan email saya langsung."
+  },
+  "footer": {
+    "admin": "Admin"
+  },
+  "theme": {
+    "dark": "Gelap",
+    "light": "Terang"
+  },
+  "lang": {
+    "en": "EN",
+    "id": "ID"
+  }
+}
