@@ -7,11 +7,6 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: "/",
-        destination: "/en",
-        permanent: false,
-      },
-      {
         source: "/admin",
         destination: "/en/admin",
         permanent: false,
