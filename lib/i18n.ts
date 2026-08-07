@@ -1,9 +1,10 @@
 import { getRequestConfig } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-export const locales = ["en", "id"] as const;
-export type Locale = (typeof locales)[number];
-export const defaultLocale: Locale = "en";
+// Re-exported so existing imports (e.g. app/[locale]/layout.tsx) keep working.
+// Middleware must import from "./i18n-config" instead.
+import { locales, defaultLocale, type Locale } from "./i18n-config";
+export { locales, defaultLocale, type Locale };
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;

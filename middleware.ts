@@ -1,6 +1,5 @@
-import "./lib/polyfill";
 import createMiddleware from "next-intl/middleware";
-import { locales, defaultLocale } from "./lib/i18n";
+import { locales, defaultLocale } from "./lib/i18n-config";
 import { NextResponse, type NextRequest } from "next/server";
 
 const handleIntl = createMiddleware({
