@@ -10,10 +10,21 @@ const handleIntl = createMiddleware({
 });
 
 export default async function middleware(request: NextRequest) {
-  const session = await updateSession(request);
-  const response = handleIntl(request);
-  session.response.cookies.getAll().forEach((cookie) => response.cookies.set(cookie));
-  return response ?? NextResponse.next();
+  try {
+    const session = await updateSession(request);
+    const response = handleIntl(request);
+    
+    // Safely sync cookies from Supabase session refresh to the intl response
+    session.response.cookies.getAll().forEach((cookie) => {
+      response.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    
+    return response;
+  } catch (error) {
+    console.error("Middleware crash prevented:", error);
+    // Fallback to just intl routing if Supabase refresh fails entirely
+    return handleIntl(request);
+  }
 }
 
 export const config = {
