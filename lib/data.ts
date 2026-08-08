@@ -250,6 +250,12 @@ export const DEFAULT_SKILLS: Skill[] = [
   { id: 31, group_name: "Cloud", name: "Microsoft Azure (DP-900)", is_featured: true, sort_order: 31 },
   { id: 32, group_name: "Languages", name: "Indonesian (Native)", is_featured: false, sort_order: 32 },
   { id: 33, group_name: "Languages", name: "English (Professional Working Proficiency)", is_featured: false, sort_order: 33 },
+  { id: 34, group_name: "Database", name: "Oracle SQL", is_featured: false, sort_order: 34 },
+  { id: 35, group_name: "Soft Skills", name: "Strategic Leadership", is_featured: true, sort_order: 35 },
+  { id: 36, group_name: "Soft Skills", name: "Project Management", is_featured: false, sort_order: 36 },
+  { id: 37, group_name: "Soft Skills", name: "KPI Reporting", is_featured: false, sort_order: 37 },
+  { id: 38, group_name: "Soft Skills", name: "Stakeholder Management", is_featured: false, sort_order: 38 },
+  { id: 39, group_name: "Soft Skills", name: "Time Management", is_featured: false, sort_order: 39 },
 ];
 
 export const DEFAULT_EXPERIENCES: Experience[] = [
@@ -271,7 +277,7 @@ export const DEFAULT_EXPERIENCES: Experience[] = [
       "Delivered a complete corporate company profile website redesign—from requirements gathering to final deployment—within 6 months, aligning ASABRI's digital presence with national BUMN visual identity standards.",
     achievement_id:
       "Menghasilkan desain ulang website profil perusahaan korporat secara lengkap—dari pengumpulan kebutuhan hingga deployment akhir—dalam waktu 6 bulan, menyelaraskan kehadiran digital ASABRI dengan standar identitas visual BUMN nasional.",
-    tools: ["Microsoft 365", "Figma", "Adobe Creative Suite"],
+    tools: ["Microsoft 365", "Canva", "Figma", "Adobe Creative Suite"],
   },
   {
     id: 2,
@@ -312,6 +318,26 @@ export const DEFAULT_EXPERIENCES: Experience[] = [
     achievement_id:
       "Meningkatkan engagement Instagram sebesar 15% dalam dua minggu dan mengurangi waktu produksi per unggahan sebesar 60% melalui standarisasi template sistematis.",
     tools: ["Adobe Creative Suite", "CapCut", "Figma"],
+  },
+  {
+    id: 4,
+    sort_order: 4,
+    type: "organization",
+    period: "NOV 2022 → NOV 2023",
+    title_en: "UI/UX Member",
+    title_id: "Anggota UI/UX",
+    org: "Google Developer Student Clubs (GDSC) Palembang",
+    location_en: "Palembang, Indonesia",
+    location_id: "Palembang, Indonesia",
+    desc_en:
+      "Designed high-fidelity prototype interfaces and ran usability testing to improve digital product accessibility across community technology projects.",
+    desc_id:
+      "Merancang antarmuka prototipe high-fidelity dan menjalankan pengujian kegunaan untuk meningkatkan aksesibilitas produk digital pada proyek teknologi komunitas.",
+    achievement_en:
+      "Contributed to user-centric prototypes adopted across multiple community technology projects, sharpening hands-on UX research and design practice.",
+    achievement_id:
+      "Berkontribusi pada prototipe yang berpusat pada pengguna di berbagai proyek teknologi komunitas, memperkuat praktik riset dan desain UX secara langsung.",
+    tools: ["Figma"],
   },
 ];
 
@@ -354,7 +380,7 @@ export const DEFAULT_PROFILE: Profile = {
     "Membangun sistem digital berbasis AI dan alat internal enterprise untuk operasional skala korporat di PT ASABRI (Persero), Jakarta.",
   badge_en: "Open to new roles",
   badge_id: "Terbuka untuk peluang baru",
-  location: "Jakarta, Indonesia",
+  location: "Jakarta Timur, Indonesia",
   photo_url: "",
   stats: [
     { value: "3.93", label_en: "GPA / 4.00", label_id: "IPK / 4,00" },
