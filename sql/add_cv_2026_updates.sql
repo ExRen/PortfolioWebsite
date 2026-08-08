@@ -12,7 +12,7 @@ INSERT INTO experiences (
   org, location_en, location_id,
   desc_en, desc_id,
   achievement_en, achievement_id,
-  tools, created_at
+  tools
 )
 SELECT
   4,
@@ -27,8 +27,7 @@ SELECT
   'Merancang antarmuka prototipe high-fidelity dan menjalankan pengujian kegunaan untuk meningkatkan aksesibilitas produk digital pada proyek teknologi komunitas.',
   'Contributed to user-centric prototypes adopted across multiple community technology projects, sharpening hands-on UX research and design practice.',
   'Berkontribusi pada prototipe yang berpusat pada pengguna di berbagai proyek teknologi komunitas, memperkuat praktik riset dan desain UX secara langsung.',
-  ARRAY['Figma'],
-  NOW()
+  ARRAY['Figma']
 WHERE NOT EXISTS (
   SELECT 1 FROM experiences
   WHERE org = 'Google Developer Student Clubs (GDSC) Palembang'
