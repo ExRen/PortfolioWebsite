@@ -5,6 +5,7 @@ import type {
   Education,
   Profile,
   CurrentlyBuilding,
+  Post,
 } from "./types";
 
 export const DEFAULT_PROJECTS: Project[] = [
@@ -213,6 +214,122 @@ export const DEFAULT_CURRENT_BUILDING: CurrentlyBuilding[] = [
     status_en: "Planning",
     status_id: "Perencanaan",
     stack: ["Node.js", "Cloudinary", "Multer"],
+  },
+];
+
+export const DEFAULT_POSTS: Post[] = [
+  {
+    id: 1,
+    slug: "migrating-to-nextjs",
+    title_en: "Why I Migrated My Portfolio to Next.js 15",
+    title_id: "Kenapa Saya Migrasi Portofolio ke Next.js 15",
+    excerpt_en:
+      "From vanilla HTML/CSS/JS to App Router, RSC, server actions, and i18n. A concise writeup of the migration and what changed.",
+    excerpt_id:
+      "Dari vanilla HTML/CSS/JS ke App Router, RSC, server actions, dan i18n. Ringkasan migrasi dan apa saja yang berubah.",
+    content_en: `## The old site
+
+My portfolio started as a single-page vanilla site: one big \`index.html\`, a CSS file full of custom properties, and a handful of inline scripts. It worked, but every change was a full-file edit and translations lived in the markup.
+
+## The move to Next.js
+
+The rewrite went to **Next.js 15** with the App Router:
+
+- Server components for every section (hero, projects, experience)
+- Server actions for admin CRUD
+- \`next-intl\` for EN/ID routes
+- Tailwind v4 with the old CSS variables preserved as theme tokens
+
+## What improved
+
+1. **Typed data** — all Supabase rows are TypeScript-first
+2. **Admin panel** — auth-gated writes via server actions
+3. **i18n** — locale-prefixed routes done once, language toggles for free
+4. **Fallbacks** — a \`safeFetch\` wrapper keeps the site rendering even if Supabase is unreachable
+
+## Takeaways
+
+Migrating felt slow for a week and fast after that. Most time went into types and the data layer — the UI itself moved over almost unchanged.`,
+    content_id: `## Situs lama
+
+Portofolio saya dimulai sebagai satu halaman vanilla: satu file \`index.html\` besar, CSS penuh custom properties, dan beberapa script inline. Fungsional, tapi setiap perubahan berarti mengedit seluruh file.
+
+## Pindah ke Next.js
+
+Migrasi mengarah ke **Next.js 15** dengan App Router:
+
+- Server components untuk setiap section
+- Server actions untuk penulisan admin
+- \`next-intl\` untuk rute EN/ID
+- Tailwind v4 dengan variabel CSS lama dipertahankan sebagai theme tokens
+
+## Hasilnya
+
+Semua section jadi typed, panel admin terpisah aman, dan bilingual tanpa duplikasi. Fallback \`safeFetch\` menjaga situs tetap tampil walau Supabase bermasalah.
+
+## Kesimpulan
+
+Migrasi terasa lambat di minggu pertama, menyenangkan setelahnya. Waktu terbesar dihabiskan pada lapisan data dan tipe — komponen UI hampir tidak berubah.`,
+    cover_image: null,
+    published_at: "2026-08-01T00:00:00Z",
+    updated_at: "2026-08-01T00:00:00Z",
+  },
+  {
+    id: 2,
+    slug: "scraping-instagram-responsibly",
+    title_en: "Scraping Instagram Without Getting Blocked",
+    title_id: "Scraping Instagram Tanpa Kena Block",
+    excerpt_en:
+      "Reduce login restrictions and bot detection with the right combo of tools, rate limits, and clean session handling.",
+    excerpt_id:
+      "Kurangi hambatan login dan deteksi bot dengan kombinasi tools, rate limit, dan penanganan sesi yang bersih.",
+    content_en: `## The problem
+
+Collecting public data from Instagram hits two walls: login walls and bot detection.
+
+## The stack that works
+
+My internal tool pairs \`instagrapi\` with a few tricks:
+
+- **Fresh sessions** — regenerate the session file, never reuse stale ones
+- **Rate limits** — a sleep between requests tuned per endpoint
+- **Streamlit frontend** — a thin UI on top so teammates can trigger scrapes without touching code
+
+## Practical rules
+
+1. Respect the rate limits you set
+2. Cache aggressively — never re-fetch what you already stored
+3. Log failures distinctly from blocked
+4. Keep daily volume deliberately low
+
+## Closing
+
+Treat scraping as engineering at scale: the value is in a scraper that stays alive, not in throughput.`,
+    content_id: `## The problem
+
+Mengumpulkan data publik dari Instagram menghadapi dua tembok: halaman login dan deteksi bot.
+
+## Stack yang dipakai
+
+Tool internal ini memadukan \`instagrapi\` dengan beberapa trik:
+
+- **Fresh sessions** — regenerasi file sesi, jangan pakai sesi basi
+- **Rate limit** — jeda antar request yang disesuaikan
+- **Frontend Streamlit** — lapisan tipis supaya tim bisa menjalankannya tanpa menyentuh kode
+
+## Aturan praktis
+
+1. Hormati rate limit yang kamu buat sendiri
+2. Cache sesi, jangan tarik ulang data yang sudah ada
+3. Bedakan error karena block vs error teknis
+4. Batasi volume harian
+
+## Penutup
+
+Perlakukan scraping sebagai engineering berskala: nilai ada di scraper yang tetap hidup, bukan di throughput.`,
+    cover_image: null,
+    published_at: "2026-07-15T00:00:00Z",
+    updated_at: "2026-07-15T00:00:00Z",
   },
 ];
 

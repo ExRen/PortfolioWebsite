@@ -6,6 +6,7 @@ import {
   DEFAULT_EDUCATION,
   DEFAULT_PROFILE,
   DEFAULT_CURRENT_BUILDING,
+  DEFAULT_POSTS,
   TICKER_ITEMS,
   CATEGORIES,
 } from "./data";
@@ -16,6 +17,7 @@ import type {
   Education,
   Profile,
   CurrentlyBuilding,
+  Post,
 } from "./types";
 
 async function safeFetch<T>(loader: () => Promise<T>, fallback: T): Promise<T> {
@@ -34,11 +36,24 @@ export async function getProjects(): Promise<Project[]> {
   return safeFetch<Project[]>(async () => {
     const { data, error } = await supabase
       .from("projects")
-      .select("id,sort_order,category,name,role_en,role_id,desc_en,desc_id,detail_en,detail_id,tags,highlight,status,metrics,github_url,live_url,images")
+      .select("id,sort_order,category,slug,name,role_en,role_id,desc_en,desc_id,detail_en,detail_id,tags,highlight,status,metrics,github_url,live_url,images")
       .order("sort_order", { ascending: true });
     if (error) throw error;
     return data as Project[];
   }, DEFAULT_PROJECTS);
+}
+
+export async function getProjectBySlug(slug: string): Promise<Project | null> {
+  const supabase = await createClient();
+  return safeFetch<Project | null>(async () => {
+    const { data, error } = await supabase
+      .from("projects")
+      .select("id,sort_order,category,slug,name,role_en,role_id,desc_en,desc_id,detail_en,detail_id,tags,highlight,status,metrics,github_url,live_url,images")
+      .eq("slug", slug)
+      .maybeSingle();
+    if (error) throw error;
+    return data;
+  }, null);
 }
 
 export async function getSkills(): Promise<Skill[]> {
@@ -82,7 +97,7 @@ export async function getProfile(): Promise<Profile> {
   return safeFetch<Profile>(async () => {
     const { data, error } = await supabase
       .from("profile")
-      .select("id,hero_name,hero_tagline_en,hero_tagline_id,hero_bio_en,hero_bio_id,badge_en,badge_id,location,photo_url,stats,contact_email,contact_linkedin,contact_portfolio,contact_github,footer_en,footer_id,contact_cta_en,contact_cta_id,about_en,about_id,pills_en,pills_id,certifications")
+      .select("id,hero_name,hero_tagline_en,hero_tagline_id,hero_bio_en,hero_bio_id,badge_en,badge_id,location,photo_url,stats,contact_email,contact_linkedin,contact_portfolio,contact_github,cv_url_en,cv_url_id,footer_en,footer_id,contact_cta_en,contact_cta_id,about_en,about_id,pills_en,pills_id,certifications")
       .maybeSingle();
     if (error) throw error;
     if (!data) throw new Error("no profile row");
@@ -91,8 +106,40 @@ export async function getProfile(): Promise<Profile> {
 }
 
 export async function getCurrentlyBuilding(): Promise<CurrentlyBuilding[]> {
-  // Static for now — could be moved to a `building` table later
-  return DEFAULT_CURRENT_BUILDING;
+  const supabase = await createClient();
+  return safeFetch<CurrentlyBuilding[]>(async () => {
+    const { data, error } = await supabase
+      .from("currently_building")
+      .select("id,sort_order,name_en,name_id,description_en,description_id,status_en,status_id,stack")
+      .order("sort_order", { ascending: true });
+    if (error) throw error;
+    return data as CurrentlyBuilding[];
+  }, DEFAULT_CURRENT_BUILDING);
+}
+
+export async function getPosts(): Promise<Post[]> {
+  const supabase = await createClient();
+  return safeFetch<Post[]>(async () => {
+    const { data, error } = await supabase
+      .from("posts")
+      .select("id,slug,title_en,title_id,excerpt_en,excerpt_id,content_en,content_id,cover_image,published_at,updated_at")
+      .order("published_at", { ascending: false });
+    if (error) throw error;
+    return data as Post[];
+  }, DEFAULT_POSTS);
+}
+
+export async function getPostBySlug(slug: string): Promise<Post | null> {
+  const supabase = await createClient();
+  return safeFetch<Post | null>(async () => {
+    const { data, error } = await supabase
+      .from("posts")
+      .select("id,slug,title_en,title_id,excerpt_en,excerpt_id,content_en,content_id,cover_image,published_at,updated_at")
+      .eq("slug", slug)
+      .maybeSingle();
+    if (error) throw error;
+    return data;
+  }, DEFAULT_POSTS.find((p) => p.slug === slug) ?? null);
 }
 
 export { TICKER_ITEMS, CATEGORIES };

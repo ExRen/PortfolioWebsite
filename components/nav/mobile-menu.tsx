@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
+import { useLocale } from "next-intl";
 
 interface Labels {
   hireMe: string;
@@ -8,6 +10,7 @@ interface Labels {
   projects: string;
   experience: string;
   contact: string;
+  blog: string;
   menu: string;
   close: string;
 }
@@ -22,6 +25,7 @@ export function MobileMenu({
   labels: Labels;
 }) {
   const menuRef = useRef<HTMLDivElement>(null);
+  const locale = useLocale();
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -41,10 +45,9 @@ export function MobileMenu({
       if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-    /* istanbul ignore next */
+document.addEventListener("keydown", onKeyDown);
     return () => {
+      document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = "";
     };
   }, [open, onClose]);
@@ -64,6 +67,9 @@ export function MobileMenu({
       <a href="#contact" onClick={onClose}>
         {labels.contact}
       </a>
+      <Link href={`/${locale}/blog`} onClick={onClose}>
+        {labels.blog}
+      </Link>
     </div>
   );
 }

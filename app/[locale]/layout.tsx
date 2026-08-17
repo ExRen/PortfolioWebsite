@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { DM_Sans, IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
+import Script from "next/script";
+import { DM_Sans, IBM_Plex_Mono, Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -9,8 +10,8 @@ import { NavProgress } from "@/components/nav-progress";
 import { ScrollTop } from "@/components/scroll-top";
 import "../globals.css";
 
-const workshopDisplay = Space_Grotesk({ subsets: ["latin"], variable: "--font-workshop-display" });
-const workshopBody = DM_Sans({ subsets: ["latin"], variable: "--font-workshop-body" });
+const workshopDisplay = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-workshop-display" });
+const workshopBody = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-workshop-body" });
 const workshopMono = IBM_Plex_Mono({ weight: ["400", "500", "600"], subsets: ["latin"], variable: "--font-workshop-mono" });
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -82,7 +83,9 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
-        <script
+        <Script
+          id="theme-initializer"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               try {
@@ -98,8 +101,10 @@ export default async function LocaleLayout({
         />
       </head>
       <body className={`${workshopDisplay.variable} ${workshopBody.variable} ${workshopMono.variable}`}>
-        <script
+        <Script
+          id="json-ld-person"
           type="application/ld+json"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",

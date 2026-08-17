@@ -7,6 +7,7 @@
     "experience": "experience",
     "skills": "skills",
     "contact": "contact",
+    "blog": "blog",
     "hireMe": "Start a Conversation",
     "language": "Switch language",
     "theme": "Switch theme",
@@ -41,11 +42,21 @@
     "modalDetail": "Project Details",
     "modalGallery": "Documentation",
     "modalGalleryEmpty": "No documentation photos yet",
-    "close": "Close project details"
+    "close": "Close project details",
+    "back": "← Back to projects"
   },
   "hero": {
     "viewProjects": "See My Work",
     "downloadCv": "Download CV"
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Notes on building things.",
+    "readMore": "Read more →",
+    "publishedOn": "Published",
+    "back": "← Back to blog",
+    "empty": "No posts yet.",
+    "latest": "Latest from the blog"
   },
   "contact": {
     "name": "Your Name",

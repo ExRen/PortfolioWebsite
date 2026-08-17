@@ -12,6 +12,7 @@ export async function SiteNav() {
         projects: t("nav.projects"),
         experience: t("nav.experience"),
         contact: t("nav.contact"),
+        blog: t("nav.blog"),
         language: t("nav.language"),
         theme: t("nav.theme"),
         menu: t("nav.menu"),

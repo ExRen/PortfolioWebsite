@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { CATEGORIES } from "@/lib/data";
@@ -17,7 +18,6 @@ export function ProjectsClient({
   const t = useTranslations("");
   const [filter, setFilter] = useState<string>("all");
   const [openId, setOpenId] = useState<number | null>(null);
-  const triggerRef = useRef<HTMLButtonElement | null>(null);
 
   const visible = useMemo(
     () => (filter === "all" ? items : items.filter((p) => p.category === filter)),
@@ -44,46 +44,16 @@ export function ProjectsClient({
       <div className="pgrid" id="projectGrid">
         {items.map((p) => {
           const hidden = !(filter === "all" || p.category === filter);
-            return (
-              <motion.button
-                key={p.id}
-                layout
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                whileHover={{ y: -4 }}
-                whileTap={{ y: -1 }}
-                viewport={{ once: true, margin: "-20px" }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-                className={`pc ${hidden ? "filter-hide" : "filter-show"}`}
-                data-category={p.category}
-                onClick={(event) => { triggerRef.current = event.currentTarget; setOpenId(p.id); }}
-                type="button"
-              >
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span className="p-num">#{String(p.id).padStart(2, "0")}</span>
-                <span className="p-role">
-                  {locale === "id" ? p.role_id : p.role_en}
-                </span>
-                {p.status && locale !== "id" && <span className="p-status">{p.status}</span>}
-              </div>
-              <div className="p-name">{p.name}</div>
-              <div className="p-desc">
-                {locale === "id" ? p.desc_id : p.desc_en}
-              </div>
-              <div className="p-tags">
-                {p.tags.slice(0, 5).map((tag, i) => (
-                  <span key={i} className="tag">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <div className="p-arrow">
-                <svg viewBox="0 0 24 24">
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                  <polyline points="12 5 19 12 12 19" />
-                </svg>
-              </div>
-            </motion.button>
+          return (
+            <ProjectCard
+              key={p.id}
+              project={p}
+              locale={locale}
+              hidden={hidden}
+              onOpen={() => {
+                setOpenId(p.id);
+              }}
+            />
           );
         })}
       </div>
@@ -92,7 +62,6 @@ export function ProjectsClient({
         <ProjectModal
           project={open}
           locale={locale}
-          triggerRef={triggerRef}
           onClose={() => setOpenId(null)}
         />
       )}
@@ -100,16 +69,73 @@ export function ProjectsClient({
   );
 }
 
+function ProjectCard({
+  project: p,
+  locale,
+  hidden,
+  onOpen,
+}: {
+  project: Project;
+  locale: string;
+  hidden: boolean;
+  onOpen: () => void;
+}) {
+  const body = (
+    <>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <span className="p-num">#{String(p.id).padStart(2, "0")}</span>
+        <span className="p-role">{locale === "id" ? p.role_id : p.role_en}</span>
+        {p.status && locale !== "id" && <span className="p-status">{p.status}</span>}
+      </div>
+      <div className="p-name">{p.name}</div>
+      <div className="p-desc">{locale === "id" ? p.desc_id : p.desc_en}</div>
+      <div className="p-tags">
+        {p.tags.slice(0, 5).map((tag, i) => (
+          <span key={i} className="tag">
+            {tag}
+          </span>
+        ))}
+      </div>
+      <div className="p-arrow">
+        <svg viewBox="0 0 24 24">
+          <line x1="5" y1="12" x2="19" y2="12" />
+          <polyline points="12 5 19 12 12 19" />
+        </svg>
+      </div>
+    </>
+  );
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-20px" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className={`pc ${hidden ? "filter-hide" : "filter-show"}`}
+      data-category={p.category}
+    >
+      {p.slug ? (
+        <Link href={`/${locale}/projects/${p.slug}`} className="pc-inner">
+          {body}
+        </Link>
+      ) : (
+        <button type="button" className="pc-inner pc-btn" onClick={onOpen}>
+          {body}
+        </button>
+      )}
+    </motion.div>
+  );
+}
+
 function ProjectModal({
   project,
   locale,
   onClose,
-  triggerRef,
 }: {
   project: Project;
   locale: string;
   onClose: () => void;
-  triggerRef: React.MutableRefObject<HTMLButtonElement | null>;
 }) {
   const t = useTranslations("");
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -126,8 +152,8 @@ function ProjectModal({
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     };
     document.addEventListener("keydown", onKeyDown);
-    return () => { document.removeEventListener("keydown", onKeyDown); triggerRef.current?.focus(); };
-  }, [onClose, triggerRef]);
+    return () => { document.removeEventListener("keydown", onKeyDown); };
+  }, [onClose]);
 
   return (
     <div className="modal-overlay active" role="presentation" onClick={onClose}>

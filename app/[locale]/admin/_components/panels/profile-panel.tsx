@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { updateProfile, uploadPhoto } from "../../_actions/crud";
+import { updateProfile, uploadPhoto, uploadCv, clearCv } from "../../_actions/crud";
 import type { Profile, ProfileStat, Certification } from "@/lib/types";
 
 export function ProfilePanel({
@@ -37,6 +37,31 @@ export function ProfilePanel({
       onChanged();
     } else {
       onError(r.error ?? "Upload failed");
+    }
+  };
+
+  const onUploadCv = async (lang: "en" | "id", e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("lang", lang);
+    const r = await uploadCv(fd);
+    if (r.ok && r.url) {
+      setP({ ...p, [`cv_url_${lang}`]: r.url });
+      onChanged();
+    } else {
+      onError(r.error ?? "Upload failed");
+    }
+  };
+
+  const onClearCv = async (lang: "en" | "id") => {
+    const r = await clearCv(lang);
+    if (r.ok) {
+      setP({ ...p, [`cv_url_${lang}`]: "" });
+      onChanged();
+    } else {
+      onError(r.error ?? "Clear failed");
     }
   };
 
@@ -177,6 +202,38 @@ export function ProfilePanel({
           className="form-input"
         />
       </div>
+
+      <h3 style={{ marginTop: 24, marginBottom: 12 }}>CV (Resume)</h3>
+      {(["en", "id"] as const).map((lang) => (
+        <div key={lang} className="form-row" style={{ alignItems: "center" }}>
+          <div className="form-group">
+            <label className="form-label">CV URL ({lang.toUpperCase()})</label>
+            {p[`cv_url_${lang}`] ? (
+              <a href={p[`cv_url_${lang}`]} target="_blank" rel="noopener noreferrer">
+                {p[`cv_url_${lang}`]}
+              </a>
+            ) : (
+              <span style={{ opacity: 0.6 }}>Not uploaded — hero falls back to Google Drive link</span>
+            )}
+          </div>
+          <div className="form-group">
+            <label className="form-label">UPLOAD ({lang.toUpperCase()})</label>
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              onChange={(e) => onUploadCv(lang, e)}
+              className="form-input"
+            />
+          </div>
+          <button
+            className="btn btn-sm btn-danger"
+            onClick={() => onClearCv(lang)}
+            disabled={!p[`cv_url_${lang}`]}
+          >
+            Clear
+          </button>
+        </div>
+      ))}
 
       <h3 style={{ marginTop: 24, marginBottom: 12 }}>Stats</h3>
       {p.stats.map((s, i) => (

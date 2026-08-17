@@ -4,6 +4,7 @@ export interface Project {
   id: number;
   sort_order: number;
   category: "ai" | "fullstack" | "tools";
+  slug?: string;
   name: string;
   role_en: string;
   role_id: string;
@@ -87,6 +88,8 @@ export interface Profile {
   contact_linkedin: string;
   contact_portfolio: string;
   contact_github: string;
+  cv_url_en?: string;
+  cv_url_id?: string;
   footer_en: string;
   footer_id: string;
   contact_cta_en: string;
@@ -99,6 +102,8 @@ export interface Profile {
 }
 
 export interface CurrentlyBuilding {
+  id?: number;
+  sort_order?: number;
   name_en: string;
   name_id: string;
   description_en: string;
@@ -106,6 +111,20 @@ export interface CurrentlyBuilding {
   status_en: string;
   status_id: string;
   stack: string[];
+}
+
+export interface Post {
+  id: number;
+  slug: string;
+  title_en: string;
+  title_id: string;
+  excerpt_en: string;
+  excerpt_id: string;
+  content_en: string;
+  content_id: string;
+  cover_image: string | null;
+  published_at: string | null;
+  updated_at: string | null;
 }
 
 export interface AnalyticsEvent {

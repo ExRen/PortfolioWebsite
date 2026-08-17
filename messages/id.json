@@ -7,6 +7,7 @@
     "experience": "pengalaman",
     "skills": "keahlian",
     "contact": "kontak",
+    "blog": "blog",
     "hireMe": "Mulai Diskusi",
     "language": "Ganti bahasa",
     "theme": "Ganti tema",
@@ -41,11 +42,21 @@
     "modalDetail": "Detail Proyek",
     "modalGallery": "Dokumentasi",
     "modalGalleryEmpty": "Belum ada foto dokumentasi",
-    "close": "Tutup detail proyek"
+    "close": "Tutup detail proyek",
+    "back": "← Kembali ke proyek"
   },
   "hero": {
     "viewProjects": "Lihat Karya Saya",
     "downloadCv": "Unduh CV"
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Catatan seputar pembangunan produk.",
+    "readMore": "Baca selengkapnya →",
+    "publishedOn": "Diterbitkan",
+    "back": "← Kembali ke blog",
+    "empty": "Belum ada tulisan.",
+    "latest": "Terbaru dari blog"
   },
   "contact": {
     "name": "Nama Anda",

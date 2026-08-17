@@ -13,6 +13,7 @@ interface Labels {
   projects: string;
   experience: string;
   contact: string;
+  blog: string;
   language: string;
   theme: string;
   menu: string;
@@ -57,6 +58,9 @@ export function SiteNavClient({ labels }: { labels: Labels }) {
               <a href="#experience">{labels.experience}</a>
             </li>
             <li><a href="#contact">{labels.contact}</a></li>
+            <li>
+              <Link href={`/${locale}/blog`}>{labels.blog}</Link>
+            </li>
             <li>
               <a
                 href="mailto:bimaaryadinata01@gmail.com"

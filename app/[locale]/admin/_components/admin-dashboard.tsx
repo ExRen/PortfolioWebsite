@@ -9,8 +9,10 @@ import { ProjectsPanel } from "./panels/projects-panel";
 import { SkillsPanel } from "./panels/skills-panel";
 import { ExperiencePanel } from "./panels/experience-panel";
 import { EducationPanel } from "./panels/education-panel";
+import { BuildingPanel } from "./panels/building-panel";
 import { ProfilePanel } from "./panels/profile-panel";
 import { AnalyticsPanel } from "./panels/analytics-panel";
+import { BlogPanel } from "./panels/blog-panel";
 import { Toast } from "./toast";
 import { ConfirmModal } from "./confirm-dialog";
 import type {
@@ -21,9 +23,10 @@ import type {
   Profile,
   CurrentlyBuilding,
   AnalyticsEvent,
+  Post,
 } from "@/lib/types";
 
-type Tab = "projects" | "skills" | "experience" | "education" | "profile" | "analytics";
+type Tab = "projects" | "skills" | "experience" | "education" | "building" | "blog" | "profile" | "analytics";
 
 export function AdminDashboard({
   email,
@@ -38,6 +41,7 @@ export function AdminDashboard({
     education: Education[];
     profile: Profile;
     building: CurrentlyBuilding[];
+    posts: Post[];
     analytics: AnalyticsEvent[];
   };
   locale: string;
@@ -50,7 +54,7 @@ export function AdminDashboard({
 
   useEffect(() => {
     const value = new URLSearchParams(window.location.search).get("section") as Tab | null;
-    if (value && ["projects", "skills", "experience", "education", "profile", "analytics"].includes(value)) {
+    if (value && ["projects", "skills", "experience", "education", "building", "blog", "profile", "analytics"].includes(value)) {
       setTab(value);
     }
   }, []);
@@ -155,6 +159,8 @@ export function AdminDashboard({
             "skills",
             "experience",
             "education",
+            "building",
+            "blog",
             "profile",
             "analytics",
           ] as Tab[]
@@ -208,6 +214,26 @@ export function AdminDashboard({
           <EducationPanel
             initial={data.education}
             locale={locale}
+            onChanged={() => {
+              showToast("Saved");
+              refresh();
+            }}
+            onError={(e) => showToast(e, "err")}
+          />
+        )}
+        {tab === "building" && (
+          <BuildingPanel
+            initial={data.building}
+            onChanged={() => {
+              showToast("Saved");
+              refresh();
+            }}
+            onError={(e) => showToast(e, "err")}
+          />
+        )}
+        {tab === "blog" && (
+          <BlogPanel
+            initial={data.posts}
             onChanged={() => {
               showToast("Saved");
               refresh();

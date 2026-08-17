@@ -22,12 +22,19 @@ app/
   [locale]/
     layout.tsx                 # <html>, providers, JSON-LD
     page.tsx                   # Public site (RSC, parallel fetches)
+    blog/
+      page.tsx                 # Blog listing (locale-aware, markdown excerpt)
+      [slug]/page.tsx          # Post detail — react-markdown rendering
+    projects/
+      [slug]/page.tsx          # Project detail page (from projects.slug)
     admin/
       page.tsx                 # Auth-gated admin shell
       _actions/                # Server actions: auth, crud, seed, analytics
       _components/             # 'use client' admin UI + tab panels
   actions/
     contact.ts                 # Public contact-form server action
+  api/
+    cv/[lang]/route.ts         # CV download: records cv_download event → 302 redirect
 components/
   sections/                    # RSC sections of the public site
   nav/                         # nav, mobile menu, nav-highlight
@@ -67,8 +74,8 @@ npm run lint           # next lint
 
 ## Backend (Supabase)
 - URL + anon key are in `lib/supabase/server.ts` and `lib/supabase/client.ts` via `process.env.NEXT_PUBLIC_SUPABASE_*`.
-- Tables: `projects`, `skills`, `experiences`, `education`, `profile` (single row, `id=1`), `analytics_events`. All RLS: public SELECT, `auth.uid() IS NOT NULL` for INSERT/UPDATE/DELETE.
-- Storage bucket: `portfolio-assets` (`photos/` and `projects/<id>/`).
+- Tables: `projects`, `skills`, `experiences`, `education`, `currently_building`, `posts`, `profile` (single row, `id=1`), `analytics_events`. All RLS: public SELECT, `auth.uid() IS NOT NULL` for INSERT/UPDATE/DELETE. Exception: `analytics_events` also has a public INSERT policy (for `cv_download` events from anonymous visitors; the SELECT stays admin-only).
+- Storage bucket: `portfolio-assets` (`photos/`, `projects/<id>/`, and `cv/<lang>/` for CV uploads).
 - `lib/fetcher.ts` falls back to `lib/data.ts` defaults on any Supabase error, so the public site always renders.
 
 ## SQL migrations
@@ -81,6 +88,7 @@ Run in order in the Supabase SQL editor (unchanged from the pre-migration setup)
 6. `sql/add_profile_certifications.sql`
 7. `sql/fix_rls_policies.sql` — replaces broken `auth.role()`-based RLS with `auth.uid()`. **Run this once.**
 8. `sql/storage_policies.sql` — bucket RLS. Create the bucket in Dashboard → Storage first.
+9. `sql/add_features_v2.sql` — Features v2: profile `cv_url_*` columns, `projects.slug` (+ unique backfill), `currently_building` + `posts` tables, guarded post seeds, public INSERT policy on `analytics_events` (anonymous `cv_download` events). **Run once.** (Do NOT re-run `seed_portfolio_defaults` RPC after this — it clobbers user data and predates the new tables.)
 
 ## Bilingual content
 - UI labels live in `messages/en.json` and `messages/id.json` (single root namespace).

@@ -10,6 +10,7 @@ import {
   getEducation,
   getProfile,
   getCurrentlyBuilding,
+  getPosts,
 } from "@/lib/fetcher";
 import { getAnalytics } from "./_actions/analytics";
 
@@ -34,7 +35,7 @@ export default async function AdminPage({
   }
   try { await requireAdmin(); } catch { return <LoginForm />; }
 
-  const [projects, skills, experiences, education, profile, building, analytics] =
+  const [projects, skills, experiences, education, profile, building, posts, analytics] =
     await Promise.all([
       getProjects(),
       getSkills(),
@@ -42,6 +43,7 @@ export default async function AdminPage({
       getEducation(),
       getProfile(),
       getCurrentlyBuilding(),
+      getPosts(),
       getAnalytics(),
     ]);
 
@@ -55,6 +57,7 @@ export default async function AdminPage({
         education,
         profile,
         building,
+        posts,
         analytics,
       }}
       locale={locale}

@@ -11,6 +11,7 @@ import { Experience } from "@/components/sections/experience";
 import { Skills } from "@/components/sections/skills";
 import { Contact } from "@/components/sections/contact";
 import { Footer } from "@/components/sections/footer";
+import LatestPost from "@/components/sections/latest-post";
 import { SiteNav } from "@/components/nav/site-nav";
 import { StatsBar } from "@/components/sections/stats-bar";
 import { Ticker } from "@/components/sections/ticker";
@@ -21,6 +22,7 @@ import {
   getEducation,
   getProfile,
   getCurrentlyBuilding,
+  getPosts,
 } from "@/lib/fetcher";
 
 export default async function HomePage({
@@ -31,7 +33,7 @@ export default async function HomePage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [profile, projects, skills, experiences, education, building, t] =
+  const [profile, projects, skills, experiences, education, building, posts, t] =
     await Promise.all([
       getProfile(),
       getProjects(),
@@ -39,6 +41,7 @@ export default async function HomePage({
       getExperiences(),
       getEducation(),
       getCurrentlyBuilding(),
+      getPosts(),
       getTranslations({ locale, namespace: "" }),
     ]);
 
@@ -56,6 +59,7 @@ export default async function HomePage({
       <Skills items={skills} locale={locale} />
       <GitHub />
       <Contact profile={profile} locale={locale} t={t} />
+      <LatestPost posts={posts} locale={locale} />
       <Footer profile={profile} locale={locale} />
     </div>
   );
