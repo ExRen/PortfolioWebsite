@@ -8,7 +8,7 @@
     "skills": "keahlian",
     "contact": "kontak",
     "blog": "blog",
-    "building": "dibangun",
+    "building": "kini",
     "hireMe": "Mulai Diskusi",
     "language": "Ganti bahasa",
     "theme": "Ganti tema",
@@ -37,13 +37,13 @@
     "tools": "Alat"
   },
   "about": {
-    "card1Title": "Standar Danantara / BUMN",
+    "card1Title": "Standar Kelas Pemerintah (BUMN)",
     "card1Desc": "Pengalaman membangun portal instansi pemerintah yang aksesibel dan lolos audit.",
     "card2Title": "Tanggung Jawab End-to-End",
     "card2Desc": "Dari merancang relasi basis data hingga containerization Docker, penggelaran, dan pelatihan pengguna korporat."
   },
   "project": {
-    "subtitle": "Sistem internal enterprise yang teruji, alur kerja otomatisasi berbasis AI, dan produk berdesain berpusat pada pengguna.",
+    "subtitle": "Sistem internal enterprise yang teruji, alur kerja otomatisasi berbasis AI, dan produk berdesain berpusat pada pengguna — dibangun agar lolos audit, mudah diskalakan, dan gampang diserahterimakan.",
     "clickDetail": "Klik untuk detail →",
     "github": "GitHub",
     "liveDemo": "Demo Langsung",
@@ -59,10 +59,10 @@
     "exploreWork": "Lihat Karya Pilihan",
     "getInTouch": "Hubungi Saya",
     "dossier": "CV / Dokumen",
-    "bumnSec": "Sekper BUMN"
+    "bumnSec": "Sekretariat Perusahaan BUMN"
   },
   "github": {
-    "bio": "Pengembang Full-Stack & Komunikator IT · ASABRI",
+    "bio": "Pengembang Full-Stack · ASABRI",
     "streakTitle": "Aktivitas Kontribusi & Streak"
   },
   "blog": {
@@ -79,7 +79,7 @@
     "email": "Email Anda",
     "message": "Pesan...",
     "send": "Kirim Pesan",
-    "inquiryType": "Jenis Pertanyaan",
+    "inquiryType": "Jenis Keperluan",
     "projectBrief": "Ringkasan Proyek / Pesan",
     "directMessage": "Kirim Pesan Langsung",
     "fastResponse": "Respon < 24 jam"
@@ -87,7 +87,7 @@
   "misc": {
     "now": "SEKARANG",
     "sending": "Mengirim...",
-    "messageSent": "Pesan terkirim — saya akan segera membalas via email.",
+    "messageSent": "Pesan terkirim — saya balas dalam 24 jam.",
     "messageFailed": "Gagal mengirim. Silakan email saya langsung."
   },
   "footer": {

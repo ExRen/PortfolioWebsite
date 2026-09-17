@@ -14,7 +14,7 @@ export async function Footer({
           {locale === "id" ? profile.footer_id : profile.footer_en}
         </span>
         <span className="font-label-code text-xs text-primary font-semibold">
-          Obsidian Liquid-Glass UI · Next.js 15
+          Next.js 15 · TypeScript · Supabase
         </span>
       </div>
     </footer>

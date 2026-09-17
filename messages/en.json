@@ -8,7 +8,7 @@
     "skills": "skills",
     "contact": "contact",
     "blog": "blog",
-    "building": "building",
+    "building": "now",
     "hireMe": "Start a Conversation",
     "language": "Switch language",
     "theme": "Switch theme",
@@ -37,13 +37,13 @@
     "tools": "Tools"
   },
   "about": {
-    "card1Title": "Danantara / SOE Standards",
+    "card1Title": "Government-Grade Standards (BUMN)",
     "card1Desc": "Experienced in building accessibility-compliant and audited government-linked portals.",
     "card2Title": "End-to-End Ownership",
     "card2Desc": "From whiteboarding database relations to Dockerizing, deploying, and training corporate users."
   },
   "project": {
-    "subtitle": "Battle-tested enterprise internal systems, AI-driven automation workflows, and human-centered design deliverables.",
+    "subtitle": "Battle-tested enterprise internal systems, AI-driven automation workflows, and human-centered design deliverables — built to survive audits, scale, and handoff.",
     "clickDetail": "Click for details →",
     "github": "GitHub",
     "liveDemo": "Live Demo",
@@ -59,10 +59,10 @@
     "exploreWork": "Explore Selected Work",
     "getInTouch": "Get in Touch",
     "dossier": "CV / Dossier",
-    "bumnSec": "BUMN Corporate Sec."
+    "bumnSec": "BUMN Corporate Secretariat"
   },
   "github": {
-    "bio": "Full-Stack Developer & IT Communicator · ASABRI",
+    "bio": "Full-Stack Developer · ASABRI",
     "streakTitle": "Contribution Activity & Streak"
   },
   "blog": {
@@ -79,7 +79,7 @@
     "email": "Your Email",
     "message": "Message...",
     "send": "Send Message",
-    "inquiryType": "Inquiry Type",
+    "inquiryType": "Inquiry Purpose",
     "projectBrief": "Project Brief / Message",
     "directMessage": "Send a Direct Message",
     "fastResponse": "Response < 24h"
@@ -87,7 +87,7 @@
   "misc": {
     "now": "NOW",
     "sending": "Sending...",
-    "messageSent": "Message sent — I'll reply via email soon.",
+    "messageSent": "Message sent — I'll reply within 24 hours.",
     "messageFailed": "Couldn't send. Email me directly."
   },
   "footer": {
