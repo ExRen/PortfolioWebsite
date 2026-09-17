@@ -8,6 +8,7 @@
     "skills": "skills",
     "contact": "contact",
     "blog": "blog",
+    "building": "building",
     "hireMe": "Start a Conversation",
     "language": "Switch language",
     "theme": "Switch theme",
@@ -35,7 +36,14 @@
     "fullstack": "Full-Stack",
     "tools": "Tools"
   },
+  "about": {
+    "card1Title": "Danantara / SOE Standards",
+    "card1Desc": "Experienced in building accessibility-compliant and audited government-linked portals.",
+    "card2Title": "End-to-End Ownership",
+    "card2Desc": "From whiteboarding database relations to Dockerizing, deploying, and training corporate users."
+  },
   "project": {
+    "subtitle": "Battle-tested enterprise internal systems, AI-driven automation workflows, and human-centered design deliverables.",
     "clickDetail": "Click for details →",
     "github": "GitHub",
     "liveDemo": "Live Demo",
@@ -47,7 +55,15 @@
   },
   "hero": {
     "viewProjects": "See My Work",
-    "downloadCv": "Download CV"
+    "downloadCv": "Download CV",
+    "exploreWork": "Explore Selected Work",
+    "getInTouch": "Get in Touch",
+    "dossier": "CV / Dossier",
+    "bumnSec": "BUMN Corporate Sec."
+  },
+  "github": {
+    "bio": "Full-Stack Developer & IT Communicator · ASABRI",
+    "streakTitle": "Contribution Activity & Streak"
   },
   "blog": {
     "title": "Blog",
@@ -62,7 +78,11 @@
     "name": "Your Name",
     "email": "Your Email",
     "message": "Message...",
-    "send": "Send Message"
+    "send": "Send Message",
+    "inquiryType": "Inquiry Type",
+    "projectBrief": "Project Brief / Message",
+    "directMessage": "Send a Direct Message",
+    "fastResponse": "Response < 24h"
   },
   "misc": {
     "now": "NOW",

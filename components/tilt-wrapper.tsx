@@ -9,6 +9,10 @@ export function TiltWrapper({ children }: { children: ReactNode }) {
   const [rotateY, setRotateY] = useState(0);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (typeof window !== "undefined") {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (window.matchMedia("(pointer: coarse)").matches) return;
+    }
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     const width = rect.width;

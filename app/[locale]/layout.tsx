@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { DM_Sans, IBM_Plex_Mono, Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
+import { Geist, IBM_Plex_Mono, JetBrains_Mono, Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -8,10 +8,15 @@ import { locales, type Locale } from "@/lib/i18n";
 import { ThemeProvider } from "@/components/theme-provider";
 import { NavProgress } from "@/components/nav-progress";
 import { ScrollTop } from "@/components/scroll-top";
+import { RippleCanvas } from "@/components/ripple-canvas";
+import { MagneticCursor } from "@/components/magnetic-cursor";
+import { MagneticEffect } from "@/components/magnetic-effect";
 import "../globals.css";
 
+const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk" });
+const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
+const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono" });
 const workshopDisplay = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-workshop-display" });
-const workshopBody = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-workshop-body" });
 const workshopMono = IBM_Plex_Mono({ weight: ["400", "500", "600"], subsets: ["latin"], variable: "--font-workshop-mono" });
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -93,14 +98,14 @@ export default async function LocaleLayout({
                 if (saved === 'dark' || saved === 'light') {
                   document.documentElement.setAttribute('data-theme', saved);
                 } else {
-                  document.documentElement.setAttribute('data-theme', 'light');
+                  document.documentElement.setAttribute('data-theme', 'dark');
                 }
               } catch (e) {}
             `,
           }}
         />
       </head>
-      <body className={`${workshopDisplay.variable} ${workshopBody.variable} ${workshopMono.variable}`}>
+      <body className={`${spaceGrotesk.variable} ${geist.variable} ${jetbrainsMono.variable} ${workshopDisplay.variable} ${workshopMono.variable}`}>
         <Script
           id="json-ld-person"
           type="application/ld+json"
@@ -131,6 +136,9 @@ export default async function LocaleLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider>
             <NavProgress />
+            <RippleCanvas />
+            <MagneticCursor />
+            <MagneticEffect />
             {children}
             <ScrollTop />
           </ThemeProvider>

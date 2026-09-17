@@ -18,6 +18,17 @@ export function ProjectsClient({
   const t = useTranslations("");
   const [filter, setFilter] = useState<string>("all");
   const [openId, setOpenId] = useState<number | null>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
+
+  const handleOpen = (id: number) => {
+    triggerRef.current = document.activeElement as HTMLElement | null;
+    setOpenId(id);
+  };
+
+  const handleClose = () => {
+    setOpenId(null);
+    requestAnimationFrame(() => triggerRef.current?.focus());
+  };
 
   const visible = useMemo(
     () => (filter === "all" ? items : items.filter((p) => p.category === filter)),
@@ -28,12 +39,16 @@ export function ProjectsClient({
 
   return (
     <>
-      <div className="filter-row" id="filterRow">
+      <div className="flex items-center flex-wrap gap-2 p-1.5 rounded-full liquid-glass-panel mb-8 self-start" id="filterRow">
         {CATEGORIES.map((c) => (
           <button
             key={c.key}
             onClick={() => setFilter(c.key)}
-            className={`fb ${filter === c.key ? "active" : ""}`}
+            className={`magnetic-btn filter-btn px-4 py-1.5 rounded-full font-label-code text-xs font-medium transition-all ${
+              filter === c.key
+                ? "liquid-pill-btn text-white border border-orange-300/40"
+                : "bg-[var(--surface-chip-translucent)] text-text hover:text-fg hover:bg-[var(--surface-chip-translucent)]/80 border border-hairline"
+            }`}
             aria-pressed={filter === c.key}
             data-filter={c.key}
           >
@@ -41,7 +56,7 @@ export function ProjectsClient({
           </button>
         ))}
       </div>
-      <div className="pgrid" id="projectGrid">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6" id="projects-container">
         {items.map((p) => {
           const hidden = !(filter === "all" || p.category === filter);
           return (
@@ -50,9 +65,7 @@ export function ProjectsClient({
               project={p}
               locale={locale}
               hidden={hidden}
-              onOpen={() => {
-                setOpenId(p.id);
-              }}
+              onOpen={() => handleOpen(p.id)}
             />
           );
         })}
@@ -62,7 +75,7 @@ export function ProjectsClient({
         <ProjectModal
           project={open}
           locale={locale}
-          onClose={() => setOpenId(null)}
+          onClose={handleClose}
         />
       )}
     </>
@@ -81,51 +94,81 @@ function ProjectCard({
   onOpen: () => void;
 }) {
   const body = (
-    <>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span className="p-num">#{String(p.id).padStart(2, "0")}</span>
-        <span className="p-role">{locale === "id" ? p.role_id : p.role_en}</span>
-        {p.status && locale !== "id" && <span className="p-status">{p.status}</span>}
-      </div>
-      <div className="p-name">{p.name}</div>
-      <div className="p-desc">{locale === "id" ? p.desc_id : p.desc_en}</div>
-      <div className="p-tags">
-        {p.tags.slice(0, 5).map((tag, i) => (
-          <span key={i} className="tag">
-            {tag}
+    <div className="flex flex-col justify-between h-full">
+      <div>
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <span className="font-label-code text-xs font-semibold text-primary">
+            #{String(p.id).padStart(2, "0")}
           </span>
-        ))}
+          <div className="flex items-center gap-2">
+            <span className="px-3 py-1 rounded-full bg-emerald-500/10 dark:bg-emerald-950/60 border border-emerald-500/40 text-emerald-600 dark:text-emerald-400 font-label-meta text-[11px] font-semibold uppercase">
+              {locale === "id" ? p.role_id : p.role_en}
+            </span>
+            {p.status && locale !== "id" && (
+              <span className="px-3 py-1 rounded-full bg-orange-500/10 dark:bg-orange-950/60 border border-orange-500/40 text-primary font-label-meta text-[11px] font-semibold uppercase">
+                {p.status}
+              </span>
+            )}
+          </div>
+        </div>
+        <h3 className="font-headline-sm text-lg font-semibold text-fg group-hover:text-primary transition-colors">
+          {p.name}
+        </h3>
+        <p className="font-body-sm text-xs sm:text-sm text-text mt-2.5 leading-relaxed">
+          {locale === "id" ? p.desc_id : p.desc_en}
+        </p>
       </div>
-      <div className="p-arrow">
-        <svg viewBox="0 0 24 24">
-          <line x1="5" y1="12" x2="19" y2="12" />
-          <polyline points="12 5 19 12 12 19" />
-        </svg>
+
+      <div className="mt-6 pt-4 border-t border-hairline flex flex-col gap-3">
+        <div className="flex flex-wrap gap-1.5">
+          {p.tags.slice(0, 5).map((tag, i) => (
+            <span
+              key={i}
+              className="px-3 py-1 rounded-full bg-[var(--surface-chip-translucent)] backdrop-blur-md border border-hairline font-label-code text-[11px] text-text font-medium"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+        <div className="flex items-center justify-between text-ink-muted-48 group-hover:text-primary transition-colors pt-1">
+          <span className="font-label-code text-xs font-semibold">
+            {tClickDetail(locale)}
+          </span>
+          <svg className="w-5 h-5 transform group-hover:translate-x-1.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </div>
       </div>
-    </>
+    </div>
   );
 
+  if (hidden) return null;
+
   return (
-    <motion.div
+    <motion.article
       layout
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-20px" }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className={`pc ${hidden ? "filter-hide" : "filter-show"}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+      className="project-card group rounded-3xl liquid-glass-card p-6 flex flex-col justify-between"
       data-category={p.category}
     >
       {p.slug ? (
-        <Link href={`/${locale}/projects/${p.slug}`} className="pc-inner">
+        <Link href={`/${locale}/projects/${p.slug}`} className="w-full h-full block">
           {body}
         </Link>
       ) : (
-        <button type="button" className="pc-inner pc-btn" onClick={onOpen}>
+        <button type="button" className="w-full h-full text-left cursor-pointer" onClick={onOpen}>
           {body}
         </button>
       )}
-    </motion.div>
+    </motion.article>
   );
+}
+
+function tClickDetail(locale: string) {
+  return locale === "id" ? "Klik untuk detail →" : "View Details →";
 }
 
 function ProjectModal({
@@ -157,7 +200,7 @@ function ProjectModal({
 
   return (
     <div className="modal-overlay active" role="presentation" onClick={onClose}>
-      <div ref={dialogRef} className="modal" role="dialog" aria-modal="true" aria-labelledby="project-modal-title" onClick={(e) => e.stopPropagation()}>
+      <div ref={dialogRef} className="modal liquid-glass-panel" role="dialog" aria-modal="true" aria-labelledby="project-modal-title" onClick={(e) => e.stopPropagation()}>
         <div className="modal-close">
           <button className="modal-close-btn" onClick={onClose} title={t("project.close")} aria-label={t("project.close")}>
             <svg viewBox="0 0 24 24">

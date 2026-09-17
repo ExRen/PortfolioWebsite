@@ -53,8 +53,18 @@ document.addEventListener("keydown", onKeyDown);
   }, [open, onClose]);
 
   return (
-    <div ref={menuRef} id="mobile-navigation" className={`mobile-menu ${open ? "active" : ""}`} role="dialog" aria-modal="true" aria-labelledby="mobile-navigation-title" hidden={!open}>
-      <h2 id="mobile-navigation-title" className="sr-only">{labels.menu}</h2>
+    <div
+      ref={menuRef}
+      id="mobile-navigation"
+      className={`mobile-menu liquid-glass-panel ${open ? "active" : ""}`}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="mobile-navigation-title"
+      hidden={!open}
+    >
+      <h2 id="mobile-navigation-title" className="sr-only">
+        {labels.menu}
+      </h2>
       <a href="#about" onClick={onClose}>
         {labels.about}
       </a>

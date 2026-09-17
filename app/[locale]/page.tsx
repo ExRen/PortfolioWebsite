@@ -15,6 +15,7 @@ import LatestPost from "@/components/sections/latest-post";
 import { SiteNav } from "@/components/nav/site-nav";
 import { StatsBar } from "@/components/sections/stats-bar";
 import { Ticker } from "@/components/sections/ticker";
+import { MotionSection } from "@/components/motion-section";
 import {
   getProjects,
   getSkills,
@@ -48,18 +49,43 @@ export default async function HomePage({
   return (
     <div className="wrap public-shell page-enter">
       <SiteNav />
-      <Hero locale={locale} profile={profile} t={t} />
-      <Projects items={projects} locale={locale} />
-      <StatsBar stats={profile.stats} t={t} locale={locale} />
-      <CurrentlyBuilding items={building} locale={locale} />
-      <Experience items={experiences} locale={locale} t={t} />
-      <About profile={profile} locale={locale} />
-      <Education items={education} locale={locale} />
-      <Certifications items={profile.certifications} locale={locale} />
-      <Skills items={skills} locale={locale} />
-      <GitHub />
-      <Contact profile={profile} locale={locale} t={t} />
-      <LatestPost posts={posts} locale={locale} />
+      <MotionSection>
+        <Hero locale={locale} profile={profile} t={t} />
+      </MotionSection>
+      <Ticker />
+      <MotionSection>
+        <Projects items={projects} locale={locale} />
+      </MotionSection>
+      <MotionSection>
+        <StatsBar stats={profile.stats} t={t} locale={locale} />
+      </MotionSection>
+      <MotionSection>
+        <CurrentlyBuilding items={building} locale={locale} />
+      </MotionSection>
+      <MotionSection>
+        <Experience items={experiences} locale={locale} t={t} />
+      </MotionSection>
+      <MotionSection>
+        <About profile={profile} locale={locale} />
+      </MotionSection>
+      <MotionSection>
+        <Education items={education} locale={locale} />
+      </MotionSection>
+      <MotionSection>
+        <Certifications items={profile.certifications} locale={locale} />
+      </MotionSection>
+      <MotionSection>
+        <Skills items={skills} locale={locale} />
+      </MotionSection>
+      <MotionSection>
+        <GitHub locale={locale} />
+      </MotionSection>
+      <MotionSection>
+        <Contact profile={profile} locale={locale} t={t} />
+      </MotionSection>
+      <MotionSection>
+        <LatestPost posts={posts} locale={locale} />
+      </MotionSection>
       <Footer profile={profile} locale={locale} />
     </div>
   );

@@ -12,11 +12,11 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("light");
+  const [theme, setThemeState] = useState<Theme>("dark");
 
   useEffect(() => {
     const saved = localStorage.getItem("pf-theme") as Theme | null;
-    const initial: Theme = saved === "dark" || saved === "light" ? saved : "light";
+    const initial: Theme = saved === "dark" || saved === "light" ? saved : "dark";
     setThemeState(initial);
     document.documentElement.setAttribute("data-theme", initial);
   }, []);

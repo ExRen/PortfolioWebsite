@@ -8,6 +8,7 @@
     "skills": "keahlian",
     "contact": "kontak",
     "blog": "blog",
+    "building": "dibangun",
     "hireMe": "Mulai Diskusi",
     "language": "Ganti bahasa",
     "theme": "Ganti tema",
@@ -35,7 +36,14 @@
     "fullstack": "Full-Stack",
     "tools": "Alat"
   },
+  "about": {
+    "card1Title": "Standar Danantara / BUMN",
+    "card1Desc": "Pengalaman membangun portal instansi pemerintah yang aksesibel dan lolos audit.",
+    "card2Title": "Tanggung Jawab End-to-End",
+    "card2Desc": "Dari merancang relasi basis data hingga containerization Docker, penggelaran, dan pelatihan pengguna korporat."
+  },
   "project": {
+    "subtitle": "Sistem internal enterprise yang teruji, alur kerja otomatisasi berbasis AI, dan produk berdesain berpusat pada pengguna.",
     "clickDetail": "Klik untuk detail →",
     "github": "GitHub",
     "liveDemo": "Demo Langsung",
@@ -47,7 +55,15 @@
   },
   "hero": {
     "viewProjects": "Lihat Karya Saya",
-    "downloadCv": "Unduh CV"
+    "downloadCv": "Unduh CV",
+    "exploreWork": "Lihat Karya Pilihan",
+    "getInTouch": "Hubungi Saya",
+    "dossier": "CV / Dokumen",
+    "bumnSec": "Sekper BUMN"
+  },
+  "github": {
+    "bio": "Pengembang Full-Stack & Komunikator IT · ASABRI",
+    "streakTitle": "Aktivitas Kontribusi & Streak"
   },
   "blog": {
     "title": "Blog",
@@ -62,7 +78,11 @@
     "name": "Nama Anda",
     "email": "Email Anda",
     "message": "Pesan...",
-    "send": "Kirim Pesan"
+    "send": "Kirim Pesan",
+    "inquiryType": "Jenis Pertanyaan",
+    "projectBrief": "Ringkasan Proyek / Pesan",
+    "directMessage": "Kirim Pesan Langsung",
+    "fastResponse": "Respon < 24 jam"
   },
   "misc": {
     "now": "SEKARANG",

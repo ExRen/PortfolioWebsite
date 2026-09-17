@@ -9,6 +9,10 @@ export function TypewriterTerminal({ codeString }: { codeString: string }) {
   const [displayed, setDisplayed] = useState("");
 
   useEffect(() => {
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setDisplayed(codeString);
+      return;
+    }
     let i = 0;
     const interval = setInterval(() => {
       setDisplayed(codeString.slice(0, i));
