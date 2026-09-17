@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
-import { getProjectBySlug, getProfile } from "@/lib/fetcher";
+import { getProjectBySlug, getProjects, getProfile } from "@/lib/fetcher";
 import { SiteNav } from "@/components/nav/site-nav";
 import { Footer } from "@/components/sections/footer";
 import type { Metadata } from "next";
@@ -34,13 +34,21 @@ export default async function ProjectPage({
   const { locale, slug } = await params;
   setRequestLocale(locale);
 
-  const [project, profile, t] = await Promise.all([
+  const [project, projects, profile, t] = await Promise.all([
     getProjectBySlug(slug),
+    getProjects(),
     getProfile(),
     getTranslations({ locale, namespace: "" }),
   ]);
 
   if (!project) notFound();
+
+  const ordered = [...projects].sort(
+    (a, b) => (a.sort_order ?? a.id) - (b.sort_order ?? b.id)
+  );
+  const idx = ordered.findIndex((p) => p.slug === project.slug && p.id === project.id);
+  const prev = idx > 0 ? ordered[idx - 1] : null;
+  const next = idx >= 0 && idx < ordered.length - 1 ? ordered[idx + 1] : null;
 
   const detail = locale === "id" ? project.detail_id : project.detail_en;
   const role = locale === "id" ? project.role_id : project.role_en;
@@ -72,11 +80,14 @@ export default async function ProjectPage({
           <p className="modal-desc">{detail}</p>
 
           {project.metrics && project.metrics.length > 0 && (
-            <div className="modal-tags" style={{ marginBottom: 16 }}>
+            <div className="case-metrics">
               {project.metrics.map((m, i) => (
-                <span key={i} className="tag" style={{ fontWeight: 600 }}>
-                  {m.value} · {locale === "id" ? m.label_id : m.label_en}
-                </span>
+                <div key={i} className="case-metric liquid-glass-card">
+                  <span className="case-metric-value">{m.value}</span>
+                  <span className="case-metric-label">
+                    {locale === "id" ? m.label_id : m.label_en}
+                  </span>
+                </div>
               ))}
             </div>
           )}
@@ -107,12 +118,48 @@ export default async function ProjectPage({
                     alt={`${project.name} screenshot ${i + 1}`}
                     width={1200}
                     height={750}
+                    loading={i === 0 ? undefined : "lazy"}
                     style={{ objectFit: "contain", width: "100%", height: "auto" }}
                   />
                 ))}
               </div>
             </div>
           )}
+
+          {(prev || next) && (
+            <nav className="case-pager" aria-label="More case studies">
+              {prev ? (
+                <Link href={`/${locale}/projects/${prev.slug ?? prev.id}`} className="case-pager-link">
+                  <span aria-hidden="true">←</span>
+                  <span>{prev.name}</span>
+                </Link>
+              ) : (
+                <span />
+              )}
+              {next ? (
+                <Link href={`/${locale}/projects/${next.slug ?? next.id}`} className="case-pager-link case-pager-next">
+                  <span>{next.name}</span>
+                  <span aria-hidden="true">→</span>
+                </Link>
+              ) : (
+                <span />
+              )}
+            </nav>
+          )}
+
+          <div className="case-cta liquid-glass-panel">
+            <span className="case-cta-text">
+              {locale === "id" ? "Punya proyek serupa?" : "Have a similar project?"}
+            </span>
+            <span className="case-cta-actions">
+              <Link href={`/${locale}#contact`} className="modal-link">
+                {t("hero.getInTouch")}
+              </Link>
+              <Link href={`/api/cv/${locale}`} className="modal-link">
+                {t("hero.dossier")}
+              </Link>
+            </span>
+          </div>
 
           <div className="modal-links" style={{ marginTop: 24 }}>
             {project.github_url && (
