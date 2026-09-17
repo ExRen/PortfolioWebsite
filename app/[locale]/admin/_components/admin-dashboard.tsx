@@ -113,6 +113,11 @@ export function AdminDashboard({
     const url = new URL(window.location.href);
     url.searchParams.set("section", t);
     window.history.replaceState({}, "", url.toString());
+    // Cache buster: revalidate server data on every tab switch so panels
+    // never show rows fetched before a migration or an external DB change.
+    startTransition(() => {
+      refresh();
+    });
   };
 
   const showToast = (msg: string, type: "ok" | "err" = "ok") => {
