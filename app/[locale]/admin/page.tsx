@@ -13,6 +13,7 @@ import {
   getPosts,
 } from "@/lib/fetcher";
 import { getAnalytics } from "./_actions/analytics";
+import { getInquiries } from "./_actions/inquiries";
 
 export default async function AdminPage({
   params,
@@ -22,9 +23,13 @@ export default async function AdminPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch {
+    user = null;
+  }
 
   if (!user) {
     return (
@@ -35,7 +40,7 @@ export default async function AdminPage({
   }
   try { await requireAdmin(); } catch { return <LoginForm />; }
 
-  const [projects, skills, experiences, education, profile, building, posts, analytics] =
+  const [projects, skills, experiences, education, profile, building, posts, analytics, inquiries] =
     await Promise.all([
       getProjects(),
       getSkills(),
@@ -45,6 +50,7 @@ export default async function AdminPage({
       getCurrentlyBuilding(),
       getPosts(),
       getAnalytics(),
+      getInquiries(),
     ]);
 
   return (
@@ -59,6 +65,7 @@ export default async function AdminPage({
         building,
         posts,
         analytics,
+        inquiries,
       }}
       locale={locale}
     />

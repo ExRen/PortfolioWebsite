@@ -134,3 +134,12 @@ export interface AnalyticsEvent {
   session_id: string;
   created_at: string;
 }
+
+export interface ContactMessage {
+  id: number;
+  name: string;
+  email: string;
+  message: string;
+  locale: string;
+  created_at: string;
+}
