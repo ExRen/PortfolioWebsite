@@ -325,6 +325,76 @@ function ProjectEditor({
           onChange={(e) => updateField((prev) => ({ ...prev, status: e.target.value }))}
         />
       </div>
+      <div className="form-group">
+        <label className="form-label">OUTCOME METRICS (shown as hero numbers)</label>
+        {(p.metrics ?? []).map((m, i) => (
+          <div key={i} className="form-row" style={{ marginBottom: 8 }}>
+            <input
+              className="form-input"
+              placeholder="Value (e.g. 91.38%)"
+              value={m.value}
+              onChange={(e) =>
+                updateField((prev) => ({
+                  ...prev,
+                  metrics: (prev.metrics ?? []).map((x, j) =>
+                    j === i ? { ...x, value: e.target.value } : x
+                  ),
+                }))
+              }
+            />
+            <input
+              className="form-input"
+              placeholder="Label EN"
+              value={m.label_en}
+              onChange={(e) =>
+                updateField((prev) => ({
+                  ...prev,
+                  metrics: (prev.metrics ?? []).map((x, j) =>
+                    j === i ? { ...x, label_en: e.target.value } : x
+                  ),
+                }))
+              }
+            />
+            <input
+              className="form-input"
+              placeholder="Label ID"
+              value={m.label_id}
+              onChange={(e) =>
+                updateField((prev) => ({
+                  ...prev,
+                  metrics: (prev.metrics ?? []).map((x, j) =>
+                    j === i ? { ...x, label_id: e.target.value } : x
+                  ),
+                }))
+              }
+            />
+            <button
+              type="button"
+              className="btn btn-sm btn-danger"
+              onClick={() =>
+                updateField((prev) => ({
+                  ...prev,
+                  metrics: (prev.metrics ?? []).filter((_, j) => j !== i),
+                }))
+              }
+            >
+              ×
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          className="btn btn-sm btn-secondary"
+          onClick={() =>
+            updateField((prev) => ({
+              ...prev,
+              metrics: [...(prev.metrics ?? []), { value: "", label_en: "", label_id: "" }],
+            }))
+          }
+        >
+          + Add Metric
+        </button>
+      </div>
       <div className="form-row">
         <div className="form-group">
           <label className="form-label">GITHUB URL</label>
