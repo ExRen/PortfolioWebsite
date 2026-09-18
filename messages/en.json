@@ -72,7 +72,8 @@
     "publishedOn": "Published",
     "back": "← Back to blog",
     "empty": "No posts yet.",
-    "latest": "Latest from the blog"
+    "latest": "Latest from the blog",
+    "rssFeed": "RSS feed"
   },
   "contact": {
     "name": "Your Name",

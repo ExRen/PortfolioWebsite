@@ -72,7 +72,8 @@
     "publishedOn": "Diterbitkan",
     "back": "← Kembali ke blog",
     "empty": "Belum ada tulisan.",
-    "latest": "Terbaru dari blog"
+    "latest": "Terbaru dari blog",
+    "rssFeed": "Umpan RSS"
   },
   "contact": {
     "name": "Nama Anda",

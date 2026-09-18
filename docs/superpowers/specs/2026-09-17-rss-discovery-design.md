@@ -14,7 +14,8 @@ one in the footer. No new tables, columns, actions, or dependencies.
   (EN "RSS feed", ID "Umpan RSS").
 
 ### 2. Footer link
-- File: `components/sections/footer.tsx`, beside the Admin link.
+- File: `components/sections/footer.tsx`, beside the stack badge (no admin
+  link is rendered anywhere; the unused `footer.admin` key stays untouched).
 - Icon-only anchor to `/{locale}/blog/rss.xml` (footer already receives
   `locale`), `aria-label` from `blog.rssFeed`.
 
