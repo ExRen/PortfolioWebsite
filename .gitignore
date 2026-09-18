@@ -32,3 +32,4 @@ Thumbs.db
 .superpowers/
 
 *.py
+next-env.d.ts
