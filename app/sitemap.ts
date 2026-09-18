@@ -1,11 +1,12 @@
 import type { MetadataRoute } from "next";
 import { getPosts, getProjects } from "@/lib/fetcher";
 
-const BASE = "https://portfolio-bima-eosin.vercel.app";
+const BASE = "https://www.portfolio-bima.web.id";
 const LOCALES = ["en", "id"] as const;
 
 function langAlternates(path: string): Record<string, string> {
   return {
+    "x-default": `${BASE}/en${path}`,
     en: `${BASE}/en${path}`,
     id: `${BASE}/id${path}`,
   };

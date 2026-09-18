@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const isId = locale === "id";
   const title = isId ? "Bima Aryadinata — Pengembang Full-Stack & Builder" : "Bima Aryadinata — Full-Stack Developer & Builder";
   const description = isId ? "Portofolio Bima Aryadinata, pengembang full-stack yang membangun sistem enterprise, produk AI, dan alat digital yang berguna." : "Portfolio of Bima Aryadinata, a full-stack developer building useful enterprise systems, AI products, and digital tools.";
-  const url = `https://portfolio-bima-eosin.vercel.app/${locale}`;
+  const url = `https://www.portfolio-bima.web.id/${locale}`;
   return {
     title,
     description,
@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     "portfolio",
   ],
   authors: [{ name: "Bima Aryadinata" }],
-  metadataBase: new URL("https://portfolio-bima-eosin.vercel.app"),
+  metadataBase: new URL("https://www.portfolio-bima.web.id"),
   openGraph: {
     type: "website",
     title,
@@ -62,7 +62,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     description,
     images: ["/og-image.png"],
   },
-    alternates: { canonical: url, languages: { en: "https://portfolio-bima-eosin.vercel.app/en", id: "https://portfolio-bima-eosin.vercel.app/id" } },
+    alternates: { canonical: url, languages: { "x-default": "https://www.portfolio-bima.web.id/en", en: "https://www.portfolio-bima.web.id/en", id: "https://www.portfolio-bima.web.id/id" } },
   };
 }
 
@@ -115,7 +115,7 @@ export default async function LocaleLayout({
               "@context": "https://schema.org",
               "@type": "Person",
               name: "Bima Aryadinata",
-              url: "https://portfolio-bima-eosin.vercel.app/",
+              url: "https://www.portfolio-bima.web.id/",
               jobTitle: "Full-Stack Developer & IT Communicator",
               alumniOf: {
                 "@type": "EducationalOrganization",

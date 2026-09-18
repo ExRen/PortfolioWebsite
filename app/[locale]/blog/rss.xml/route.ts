@@ -6,7 +6,7 @@ export function generateStaticParams() {
   return [{ locale: "en" }, { locale: "id" }];
 }
 
-const BASE = "https://portfolio-bima-eosin.vercel.app";
+const BASE = "https://www.portfolio-bima.web.id";
 
 function esc(s: string): string {
   return s
